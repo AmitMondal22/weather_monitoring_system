@@ -8,7 +8,7 @@ from controllers.settings import ClientSettingsController
 
 from models.organization_model import AddOrganization, EditOrganization, DeleteOrganization,ListOrganization
 from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,UserDeviceEdit,UserDeviceDelete,ListUsers,UserInfo,ClientId,DeviceInfo
-from models.device_data_model import EnergyData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,EnergyUsed, VoltageData,OrganizationSettings,OrganizationSettingsList,AddBill,EditOrganization
+from models.device_data_model import WeatherData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,EnergyUsed, VoltageData,OrganizationSettings,OrganizationSettingsList,AddBill,EditOrganization
 from models.report_model import EnergyUsageBilling
 from models.client_settings import ClientScreenSettings, ClientScreenSettingsEdit
 
@@ -99,7 +99,7 @@ class SendEnergySocket:
             condition = f"device_id = '{device_id}' AND device ='{device}' AND client_id = '{client_id}'"
             order_by="energy_data_id DESC"
                 
-            lastdata = select_one_data("td_energy_data", select, condition, order_by)
+            lastdata = select_one_data("td_weather_data", select, condition, order_by)
            
             await manager.send_personal_message(client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
             
@@ -392,9 +392,10 @@ async def list_device(request: Request,params:ClientId):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 # =================================================================================================
+                # graphical_view edit and change
 # =================================================================================================
 @api_client_routes.post("/devices/energy_data", dependencies=[Depends(mw_user_client)])
-async def energy_data(request: Request,params:EnergyData):
+async def energy_data(request: Request,params:WeatherData):
     try:
         data = ClientController.energy_data(params)
         resdata = successResponse(data, message="devices Data")
@@ -488,6 +489,8 @@ async def  total_power_analisis(request: Request,params:EnergyUsed):
 
 
 # =================================================================================================
+
+            # Unit And Alert  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # =================================================================================================
 
 
@@ -568,6 +571,7 @@ async def delete_alert(request: Request,params:DeleteAlert):
     
     
 # ====================================================================================
+# organization_settings
 # ====================================================================================
 
 
@@ -647,6 +651,7 @@ async def edit_organization_info(request: Request,params:EditOrganization):
 
     
 # ====================================================================================
+# remove this
 # ====================================================================================
 
 
@@ -677,6 +682,7 @@ async def new_energy_usage_billing(request: Request,params:EnergyUsageBilling):
         raise HTTPException(status_code=500, detail="Internal server error")
     
 # ===========================================================
+# change screen settings
 # ===========================================================
 
 @api_client_routes.post("/settings/client_screen_settings", dependencies=[Depends(mw_client)])

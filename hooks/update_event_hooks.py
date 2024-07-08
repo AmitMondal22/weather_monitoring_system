@@ -5,12 +5,11 @@ async def update_topics():
     data = await mqtt_topic_name()
 
     # Generate EMS topic names
-    ems_topics = [("ems/" + data[i]['concatenated_string'], 0) for i in range(len(data))]
+    ems_topics = [("wms/" + data[i]['concatenated_string'], 0) for i in range(len(data))]
 
-    # Generate UPSMS topic names
-    upsms_topics = [("UPSMS/" + data[i]['concatenated_string'], 0) for i in range(len(data))]
+    
 
     # Combine EMS and UPSMS topic lists
-    all_topics = ems_topics + upsms_topics
+    all_topics = ems_topics 
 
     return all_topics

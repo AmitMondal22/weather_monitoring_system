@@ -1,5 +1,5 @@
 import paho.mqtt.client as mqtt
-from controllers.device_to_server import EnergyController,UpsController
+from controllers.device_to_server import WeatherController
 from Library.DotDictLibrary import DotDictLibrary
 import json
 import asyncio
@@ -19,30 +19,13 @@ class MqttLibraryClass:
             client.subscribe(topic, qos=qos)
 
     def on_message(self, client, userdata, msg):
-        # client_info = {
-        #     "client_id": client._client_id.decode('utf-8') if client._client_id else 'Unknown Client ID',
-        #     "client_address": client._sock.getpeername() if client._sock else 'Unknown Address'
-        # }
-        # message_info = {
-        #     "topic": msg.topic,
-        #     "payload": msg.payload.decode('utf-8'),
-        #     "qos": msg.qos,
-        #     "retain": msg.retain,
-        #     "mid": msg.mid,
-        #     "dup": msg.dup
-        # }
-        # print(f"Received message from client: {client_info}")
-        # print("MMMMMMMMMMMMMMMMMMMMM",userdata)
-        # print("MMMMMMMMMMMMMMMMMMMMM",message_info)
         try:
             topic_name=msg.topic
             parts = topic_name.split('/')
             # reqdata=DotDictLibrary(json.loads(msg.payload))
-            if parts[0] == "ums":
-                asyncio.run(UpsController.get_ups_data(reqdata))
-            elif parts[0] == "ems":
-                reqdata=DotDictLibrary(json.loads(msg.payload.decode('utf-8')))
-                asyncio.run(EnergyController.get_energy_data(reqdata,parts[1],parts[2]))
+            # if parts[0] == "ums":
+            reqdata=DotDictLibrary(json.loads(msg.payload.decode('utf-8')))
+            asyncio.run(WeatherController.get_weather_data(reqdata,parts[1],parts[2]))
         except Exception as e:
             print("Error in on_message",e)
     

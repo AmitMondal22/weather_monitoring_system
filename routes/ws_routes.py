@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Response,WebSocket,WebSocketDiscon
 
 
 
-from models.device_data_model import EnergyData
 from Library.DecimalEncoder import DecimalEncoder
 from db_model.MASTER_MODEL import select_one_data
 

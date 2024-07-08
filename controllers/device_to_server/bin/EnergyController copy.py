@@ -15,7 +15,7 @@ async def get_energy_data(data):
         current_datetime = get_current_datetime()
         columns = "client_id, device_id, device, do_channel,e1, e2, e3, r, y, b, r_y, y_b, b_r, curr1, curr2, curr3, activep1, activep2, activep3, apparentp1, apparentp2, apparentp3, pf1, pf2, pf3, freq, reactvp1, reactvp2, reactvp3, avaragevln, avaragevll, avaragecurrent, totkw, totkva, totkvar, runhr, date, time, created_at"
         value = f"{data.client_id}, {data.device_id}, '{data.device}', {data.do_channel}, {data.e1}, {data.e2}, {data.e3}, {data.r}, {data.y}, {data.b}, {data.r_y}, {data.y_b}, {data.b_r}, {data.curr1}, {data.curr2}, {data.curr3}, {data.activep1}, {data.activep2}, {data.activep3}, {data.apparentp1}, {data.apparentp2}, {data.apparentp3}, {data.pf1}, {data.pf2}, {data.pf3}, {data.freq}, {data.reactvp1}, {data.reactvp2}, {data.reactvp3}, {data.avaragevln}, {data.avaragevll}, {data.avaragecurrent}, {data.totkw}, {data.totkva}, {data.totkvar}, {data.runhr}, '{get_current_date()}', '{get_current_time()}', '{current_datetime}'"
-        energy_data_id = insert_data("td_energy_data", columns, value)
+        energy_data_id = insert_data("td_weather_data", columns, value)
         
         
         
@@ -54,10 +54,10 @@ async def send_last_energy_data(client_id, device_id, device):
             background_tasks = BackgroundTasks()
             
             from routes.ws_routes import sennd_ws_message
-            select="energy_data_id, client_id, device_id, device, do_channel, e1, e2, e3, r, y, b, r_y, y_b, b_r, curr1, curr2, curr3, activep1, activep2, activep3, apparentp1, apparentp2, apparentp3, pf1, pf2, pf3, freq, reactvp1, reactvp2, reactvp3, avaragevln, avaragevll, avaragecurrent, totkw, totkva, totkvar, runhr, date, time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at,(SELECT e1 FROM td_energy_data WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e1_yesterday,(SELECT e2 FROM td_energy_data WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e2_yesterday,(SELECT e3 FROM td_energy_data WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e3_yesterday,(SELECT e1 FROM td_energy_data WHERE DATE(date) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e1_past_month,(SELECT e2 FROM td_energy_data WHERE DATE(date) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e2_past_month,(SELECT e3 FROM td_energy_data WHERE DATE(date) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e3_past_month,(SELECT e1 FROM td_energy_data WHERE YEAR(date) = YEAR(CURDATE())-1 AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e1_past_year,(SELECT e2 FROM td_energy_data WHERE YEAR(date) = YEAR(CURDATE())-1 AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e2_past_year,(SELECT e3 FROM td_energy_data WHERE YEAR(date) = YEAR(CURDATE())-1 AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e3_past_year "
+            select="energy_data_id, client_id, device_id, device, do_channel, e1, e2, e3, r, y, b, r_y, y_b, b_r, curr1, curr2, curr3, activep1, activep2, activep3, apparentp1, apparentp2, apparentp3, pf1, pf2, pf3, freq, reactvp1, reactvp2, reactvp3, avaragevln, avaragevll, avaragecurrent, totkw, totkva, totkvar, runhr, date, time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at,(SELECT e1 FROM td_weather_data WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e1_yesterday,(SELECT e2 FROM td_weather_data WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e2_yesterday,(SELECT e3 FROM td_weather_data WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e3_yesterday,(SELECT e1 FROM td_weather_data WHERE DATE(date) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e1_past_month,(SELECT e2 FROM td_weather_data WHERE DATE(date) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e2_past_month,(SELECT e3 FROM td_weather_data WHERE DATE(date) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e3_past_month,(SELECT e1 FROM td_weather_data WHERE YEAR(date) = YEAR(CURDATE())-1 AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e1_past_year,(SELECT e2 FROM td_weather_data WHERE YEAR(date) = YEAR(CURDATE())-1 AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e2_past_year,(SELECT e3 FROM td_weather_data WHERE YEAR(date) = YEAR(CURDATE())-1 AND device = 'device1' ORDER BY created_at DESC LIMIT 1) AS e3_past_year "
             condition = f"device_id = {device_id} AND device ='{device}' AND client_id = '{client_id}'"
             order_by="energy_data_id DESC"
-            lastdata = select_one_data("td_energy_data", select, condition, order_by)
+            lastdata = select_one_data("td_weather_data", select, condition, order_by)
             
             
             
@@ -112,12 +112,12 @@ async def send_last_energy_data(client_id, device_id, device):
                                 past_year.e2 AS e2_past_year,
                                 past_year.e3 AS e3_past_year
                             FROM 
-                                td_energy_data td
+                                td_weather_data td
                             LEFT JOIN (
                                 SELECT 
                                     e1, e2, e3
                                 FROM 
-                                    td_energy_data 
+                                    td_weather_data 
                                 WHERE 
                                     DATE(date) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) 
                                     AND device = '{device}'
@@ -131,7 +131,7 @@ async def send_last_energy_data(client_id, device_id, device):
                                 SELECT 
                                     e1, e2, e3
                                 FROM 
-                                    td_energy_data 
+                                    td_weather_data 
                                 WHERE 
                                     DATE(date) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) 
                                     AND device = '{device}'
@@ -145,7 +145,7 @@ async def send_last_energy_data(client_id, device_id, device):
                                 SELECT 
                                     e1, e2, e3
                                 FROM 
-                                    td_energy_data 
+                                    td_weather_data 
                                 WHERE 
                                     YEAR(date) = YEAR(CURDATE())-1 
                                     AND device = '{device}'
@@ -167,7 +167,7 @@ async def send_last_energy_data(client_id, device_id, device):
             
             
             
-            # lastdata = select_one_data("td_energy_data", select, condition, order_by)
+            # lastdata = select_one_data("td_weather_data", select, condition, order_by)
            
             print("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",lastdat2a)
             # AlertLibrary.send_alert(client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
@@ -181,7 +181,7 @@ async def send_last_energy_data(client_id, device_id, device):
             # await manager.send_personal_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
             # await manager.send_personal_message("EMS",client_id, device_id, device, "hello")
             
-            await sennd_ws_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
+            await sennd_ws_message("WMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
             
             print("lastdata last energy data>>>>>>>>>>/////////",json.dumps(lastdata, cls=DecimalEncoder))
             return json.dumps(lastdata, cls=DecimalEncoder)
@@ -201,7 +201,7 @@ async def send_last_energy_data(client_id, device_id, device):
 #         condition = f"device_id = '{device_id}' AND device ='{device}' AND client_id = '{client_id}'"
 #         order_by="energy_data_id DESC"
             
-#         lastdata = select_one_data("td_energy_data", select, condition, order_by)
+#         lastdata = select_one_data("td_weather_data", select, condition, order_by)
             
        
 #         # await manager.send_personal_message(client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))

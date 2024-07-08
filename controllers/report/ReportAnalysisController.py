@@ -12,13 +12,13 @@ async def energy_usage_billing(user_data,params):
                 print("??????????????-----------------???????",fdatetdate["first_day"])
                 condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
                 select="ed.e1,ed.e2,ed.e3,ed.energy_data_id, ed.device_id, ed.do_channel, ed.activep1, ed.activep2, ed.activep3, ed.apparentp1, ed.apparentp2, ed.apparentp3, ed.pf1, ed.pf2, ed.pf3, DATE_FORMAT(ed.date, '%Y-%m-%d') AS date, TIME_FORMAT(ed.time, '%H:%i:%s') AS time"
-                table=f"""td_energy_data AS ed
+                table=f"""td_weather_data AS ed
                                 INNER JOIN (
                                     SELECT
                                         date,
                                         MAX(time) AS max_time
                                     FROM
-                                        td_energy_data
+                                        td_weather_data
                                     WHERE
                                         client_id = {user_data['client_id']} AND device_id = {params.device_id}
                                         AND date BETWEEN '{fdatetdate["first_day"]}' AND '{fdatetdate["last_day"]}'
@@ -42,14 +42,14 @@ async def energy_usage_billing(user_data,params):
                             DATE_FORMAT(ed.date, '%Y-%m-%d') AS date,
                             TIME_FORMAT(ed.time, '%H:%i:%s') AS time"""
                             
-                table =f""" td_energy_data AS ed
+                table =f""" td_weather_data AS ed
                                 INNER JOIN(
                                     SELECT
                                         MAX(energy_data_id) AS max_energy_data_id,
                                         YEAR(DATE) AS YEAR,
                                         MONTH(DATE) AS MONTH
                                     FROM
-                                        td_energy_data
+                                        td_weather_data
                                     WHERE
                                         client_id = 1 AND device_id = 1
                                         AND date BETWEEN '{fdatetdate["first_day"]}' AND '{fdatetdate["last_day"]}'
@@ -63,13 +63,13 @@ async def energy_usage_billing(user_data,params):
             elif params.report_type == "C": # customized
                 condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
                 select="ed.e1,ed.e2,ed.e3,ed.energy_data_id, ed.device_id, ed.do_channel, ed.activep1, ed.activep2, ed.activep3, ed.apparentp1, ed.apparentp2, ed.apparentp3, ed.pf1, ed.pf2, ed.pf3, DATE_FORMAT(ed.date, '%Y-%m-%d') AS date, TIME_FORMAT(ed.time, '%H:%i:%s') AS time"
-                table=f"""td_energy_data AS ed
+                table=f"""td_weather_data AS ed
                                 INNER JOIN (
                                     SELECT
                                         date,
                                         MAX(time) AS max_time
                                     FROM
-                                        td_energy_data
+                                        td_weather_data
                                     WHERE
                                         client_id = {user_data['client_id']} AND device_id = {params.device_id}
                                         AND date BETWEEN '{params.start_date_time}' AND '{params.end_date_time}'
@@ -128,13 +128,13 @@ async def new_energy_usage_billing(user_data,params):
                 
                 
                 """
-                table=f"""td_energy_data AS ed
+                table=f"""td_weather_data AS ed
                                 INNER JOIN (
                                     SELECT
                                         date,
                                         MAX(time) AS max_time
                                     FROM
-                                        td_energy_data
+                                        td_weather_data
                                     WHERE
                                         client_id = {user_data['client_id']} AND device_id = {params.device_id}
                                         AND date BETWEEN '{fdatetdate["first_day"]}' AND '{fdatetdate["last_day"]}'
@@ -153,7 +153,7 @@ async def new_energy_usage_billing(user_data,params):
                 
                 condition2=f"""client_id = {user_data['client_id']} AND device_id = {params.device_id} AND date < '{fdatetdate["first_day"]}' """
                 
-                end_date_last_row=select_one_data("td_energy_data","e1,e2,e3,date,time", condition2, order_by="date DESC, time DESC")
+                end_date_last_row=select_one_data("td_weather_data","e1,e2,e3,date,time", condition2, order_by="date DESC, time DESC")
                 # data = select_data(table,select, condition,order_by="ed.date ASC, ed.time ASC")
                 # if params.end_date_time == None:
                     #     condition=f"a.client_id={user_data['client_id']} AND a.device_id={params.device_id} AND a.date BETWEEN '{params.start_date_time}' AND '{params.start_date_time}'"
@@ -196,14 +196,14 @@ async def new_energy_usage_billing(user_data,params):
                             ) AS billing_price
                             """
                             
-                table =f""" td_energy_data AS ed
+                table =f""" td_weather_data AS ed
                                 INNER JOIN(
                                     SELECT
                                         MAX(energy_data_id) AS max_energy_data_id,
                                         YEAR(DATE) AS YEAR,
                                         MONTH(DATE) AS MONTH
                                     FROM
-                                        td_energy_data
+                                        td_weather_data
                                     WHERE
                                         client_id = 1 AND device_id = 1
                                         AND date BETWEEN '{fdatetdate["first_day"]}' AND '{fdatetdate["last_day"]}'
@@ -222,7 +222,7 @@ async def new_energy_usage_billing(user_data,params):
                 
                 
                 condition2=f"""client_id = {user_data['client_id']} AND device_id = {params.device_id} AND date < '{fdatetdate["first_day"]}' """
-                end_date_last_row=select_one_data("td_energy_data","e1,e2,e3, date,time", condition2, order_by="date DESC, time DESC ")
+                end_date_last_row=select_one_data("td_weather_data","e1,e2,e3, date,time", condition2, order_by="date DESC, time DESC ")
             elif params.report_type == "C": # customized
                 condition = f"""ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}  AND COALESCE(
                                 a.billing_price,
@@ -252,13 +252,13 @@ async def new_energy_usage_billing(user_data,params):
                             ) AS billing_price
                 
                 """
-                table=f"""td_energy_data AS ed
+                table=f"""td_weather_data AS ed
                                 INNER JOIN (
                                     SELECT
                                         date,
                                         MAX(time) AS max_time
                                     FROM
-                                        td_energy_data
+                                        td_weather_data
                                     WHERE
                                         client_id = {user_data['client_id']} AND device_id = {params.device_id}
                                         AND date BETWEEN '{params.start_date_time}' AND '{params.end_date_time}'
@@ -274,7 +274,7 @@ async def new_energy_usage_billing(user_data,params):
                 
                 
                 condition2=f"client_id = {user_data['client_id']} AND device_id = {params.device_id} AND date < '{params.start_date_time}'"
-                end_date_last_row=select_one_data("td_energy_data","e1,e2,e3, date,time", condition2, order_by="date DESC, time DESC ")
+                end_date_last_row=select_one_data("td_weather_data","e1,e2,e3, date,time", condition2, order_by="date DESC, time DESC ")
         # elif user_data['user_type'] == "U" or user_data['user_type'] == "O":
         #     print("fxgbxd")
           

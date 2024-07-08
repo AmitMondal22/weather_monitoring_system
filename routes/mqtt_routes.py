@@ -4,12 +4,12 @@ from controllers.user import UserController
 # from Library.MqttLibrary import mqtt_client, MQTT_TOPIC,publish_energy_message
 from Library.MqttLibraryClass import MqttLibraryClass
 
-from controllers.device_to_server import EnergyController
+from controllers.device_to_server import WeatherController
 
 from utils.response import errorResponse, successResponse
 import json
 
-from models.mqtt_model import MqttEnergyDeviceData
+# from models.mqtt_model import MqttEnergyDeviceData
 
 from hooks.update_event_hooks import update_topics
 
@@ -40,12 +40,12 @@ async def subscribe_topics():
         print(e)
         
 # =========================================================
-@mqtt_routes.post("/publish/")
-async def publish_message(message_data: MqttEnergyDeviceData):
-    try:
-        # mqtt_client = MqttLibraryClass("test/topic")
-        mqtt_client.publish(f"ems/{message_data.ib_id}/{message_data.device}", message_data.json(), qos=0)
-        return {"message": "Message published successfully"}
-    except Exception as e:
-        return {"error": str(e)}
+# @mqtt_routes.post("/publish/")
+# async def publish_message(message_data: MqttEnergyDeviceData):
+#     try:
+#         # mqtt_client = MqttLibraryClass("test/topic")
+#         mqtt_client.publish(f"ems/{message_data.ib_id}/{message_data.device}", message_data.json(), qos=0)
+#         return {"message": "Message published successfully"}
+#     except Exception as e:
+#         return {"error": str(e)}
 

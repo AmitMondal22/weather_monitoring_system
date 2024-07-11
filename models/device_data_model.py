@@ -223,11 +223,11 @@ class WsDeviceData(BaseModel):
     device: str
     
 
-class BllingData(BaseModel):
-    billing_type: str
-    billing_price: float
-    billing_status: str
-    billing_day: int
+# class BllingData(BaseModel):
+#     billing_type: str
+#     billing_price: float
+#     billing_status: str
+#     billing_day: int
 
 class OrganizationSettings(BaseModel):
     organization_id: int
@@ -239,16 +239,16 @@ class OrganizationSettings(BaseModel):
     cities_id: int
     address: str
     created_by: int
-    billing_data: List[BllingData]
+    # billing_data: List[BllingData]
     
 class OrganizationSettingsList(BaseModel):
     organization_id: int
     
-class AddBill(BaseModel):
-    organization_id: int
-    billing_type: str
-    billing_price: float
-    billing_day: int
+# class AddBill(BaseModel):
+#     organization_id: int
+#     billing_type: str
+#     billing_price: float
+#     billing_day: int
     
 class EditOrganization(BaseModel):
     organization_id: int

@@ -191,55 +191,12 @@ async def wind_direction_data(params,user_data):
 @staticmethod
 async def organization_settings(client_id,user_id,params):
     try:
-
-        
-        #  column="client_id, device, device_name, do_channel, model, lat, lon, imei_no, device_type, meter_type, last_maintenance, created_at"
-        
-        # rows_data = []
-        # for params_data in params:
-        #     row_data = {
-        #         "client_id": params_data.client_id,
-        #         "device": params_data.device,
-        #         "device_name": params_data.device_name,
-        #         "do_channel": params_data.do_channel,
-        #         "model": params_data.model,
-        #         "lat": params_data.lat,
-        #         "lon": params_data.lon,
-        #         "imei_no": params_data.imei_no,
-        #         "device_type": params_data.device_type,
-        #         "meter_type": params_data.meter_type,
-        #         "last_maintenance": params_data.last_maintenance,
-        #         "created_at": get_current_datetime()  # Assuming get_current_datetime() returns the current datetime
-        #     }
-        #     rows_data.append(row_data)        
-        # batch_dataid=batch_insert_data("md_device", column, rows_data)
-        # print("batch_dataid---------------------", batch_dataid)
-        # return batch_dataid
-
-        
-        rows_data = []
-        for params_data in params.billing_data:
-            row_data = {
-                "client_id":params.client_id,
-                "organization_id":params.organization_id,
-                "billing_type":params_data.billing_type,
-                "billing_price":params_data.billing_price,
-                "billing_status":"Y",
-                "billing_day":params_data.billing_day,
-                "created_by":user_id,
-                "created_at":get_current_datetime()
-            }
-            rows_data.append(row_data)
-        column="client_id, organization_id, billing_type, billing_price, billing_status, billing_day, created_by, created_at"
-        batch_dataid=batch_insert_data("md_billing_organization", column, rows_data)
-        
-        
         columndata="organization_id, client_id, countries_id, states_id, regions_id, subregions_id, cities_id, address, create_by, created_at"
         insdata=f"{params.organization_id}, {params.client_id}, {params.countries_id}, {params.states_id}, {params.regions_id}, {params.subregions_id}, {params.cities_id}, '{params.address}', {user_id}, '{get_current_datetime()}'"
         st_view_organization=insert_data("st_ms_organization",columndata,insdata)
     
     
-        res={"billing_data":batch_dataid,"settings_organization":st_view_organization}
+        res={"settings_organization":st_view_organization}
         return res
     except Exception as e:
         raise e
@@ -247,48 +204,23 @@ async def organization_settings(client_id,user_id,params):
 @staticmethod
 async def organization_settings_list(client_id,user_id,params):
     try:
-        condition = f"""st_org.client_id = sb_org.client_id 
-                        AND st_org.organization_id = sb_org.organization_id 
-                        AND st_org.cities_id = mlc.id
+        condition = f"""st_org.cities_id = mlc.id
                         AND st_org.states_id = mls.id
                         AND st_org.countries_id = mlco.id
                         AND st_org.regions_id = mlr.id
                         AND st_org.subregions_id = mlsr.id
-                        AND st_org.client_id = {client_id} 
-                        AND sb_org.client_id = {client_id}  AND st_org.organization_id = {params.organization_id} AND sb_org.organization_id = {params.organization_id} AND sb_org.billing_status ='Y'"""
+                        AND st_org.client_id = {client_id}
+                        AND st_org.organization_id = {params.organization_id}"""
         
-        select="st_org.id_ms_organization,st_org.organization_id, st_org.client_id, st_org.countries_id, st_org.states_id, st_org.regions_id, st_org.subregions_id, st_org.cities_id, st_org.address, DATE_FORMAT(st_org.created_at, '%Y-%m-%d %H:%i:%s') AS created_at, sb_org.billing_organization, sb_org.billing_type, sb_org.billing_price, sb_org.billing_status, sb_org.billing_day, DATE_FORMAT(sb_org.created_at, '%Y-%m-%d %H:%i:%s') AS billing_created_at, mlc.name AS cityes, mls.name AS state, mlco.name AS countries, mlr.name AS subregions, mlsr.name AS regions"
-        
-        table="st_ms_organization AS st_org, md_billing_organization AS sb_org, md_lo_cities AS mlc, md_lo_states AS mls, md_lo_countries AS mlco, md_lo_regions AS mlr, md_lo_subregions AS mlsr"
+        select="st_org.id_ms_organization,st_org.organization_id, st_org.client_id, st_org.countries_id, st_org.states_id, st_org.regions_id, st_org.subregions_id, st_org.cities_id, st_org.address, DATE_FORMAT(st_org.created_at, '%Y-%m-%d %H:%i:%s') AS created_at, mlc.name AS cityes, mls.name AS state, mlco.name AS countries, mlr.name AS subregions, mlsr.name AS regions"
+        table="st_ms_organization AS st_org, md_lo_cities AS mlc, md_lo_states AS mls, md_lo_countries AS mlco, md_lo_regions AS mlr, md_lo_subregions AS mlsr"
         data = select_data(table,select, condition)
         return data
     except Exception as e:
         raise e
     
-@staticmethod
-async def old_bill_list(client_id, user_id, params):
-    try:
-        condition = f"client_id = {client_id} AND organization_id = {params.organization_id}"
-        # condition = f"client_id = {client_id} AND organization_id = {params.organization_id} AND billing_status = 'N'"
-        select = "billing_organization, organization_id, client_id, billing_type, billing_price, billing_status, billing_day, created_at"
-        table = "md_billing_organization"
-        data = select_data(table, select, condition,order_by="billing_organization DESC")
-        return data
-    except Exception as e:
-        raise e
     
-@staticmethod
-async def add_bill(client_id, user_id, params):
-    try:
-        update_condition=f"client_id = {client_id} AND organization_id = {params.organization_id} AND billing_status = 'Y'"
-        set_values={"billing_status":"N"}
-        update_bill=update_data("md_billing_organization",set_values,update_condition)
-        columndata="client_id, organization_id, billing_type, billing_price, billing_status, billing_day, created_by, created_at"
-        insdata=f"{client_id},{params.organization_id},'{params.billing_type}',{params.billing_price},'Y',{params.billing_day},{user_id},'{get_current_datetime()}'"
-        add_billing=insert_data("md_billing_organization",columndata,insdata)
-        return add_billing
-    except Exception as e:
-        raise e
+
     
 @staticmethod
 async def edit_organization_info(client_id,user_id,params):

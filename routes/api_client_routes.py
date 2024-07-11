@@ -627,35 +627,10 @@ async def organization_settings_list(request: Request,params:OrganizationSetting
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
     
-    
-@api_client_routes.post("/organization_settings/old_bill_list", dependencies=[Depends(mw_client)])
-async def organization_settings_old_bill_list(request: Request,params:OrganizationSettingsList):
-    try:
-        userdata=request.state.user_data
-        client_id=userdata['client_id']
-        user_id=userdata["user_id"]
-        data = await DeviceController.old_bill_list(client_id,user_id,params)
-        resdata = successResponse(data, message="Organization settings")
-        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
-    except ValueError as ve:
-        raise HTTPException(status_code=400, detail=str(ve))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal server error")
+
     
     
-@api_client_routes.post("/organization_settings/add_bill", dependencies=[Depends(mw_client)])
-async def add_bill(request: Request,params:AddBill):
-    try:
-        userdata=request.state.user_data
-        client_id=userdata['client_id']
-        user_id=userdata["user_id"]
-        data = await DeviceController.add_bill(client_id,user_id,params)
-        resdata = successResponse(data, message="Organization settings")
-        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
-    except ValueError as ve:
-        raise HTTPException(status_code=400, detail=str(ve))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal server error")
+
     
 @api_client_routes.post("/organization_settings/edit_organization_info", dependencies=[Depends(mw_client)])
 async def edit_organization_info(request: Request,params:EditOrganization):
@@ -673,37 +648,7 @@ async def edit_organization_info(request: Request,params:EditOrganization):
 
 
 
-    
-# ====================================================================================
-# remove this
-# ====================================================================================
 
-
-@api_client_routes.post("/report_analysis/energy_usage_billing", dependencies=[Depends(mw_user_client)])
-async def energy_usage_billing(request: Request,params:EnergyUsageBilling):
-    try:
-        userdata=request.state.user_data
-        data = await ReportAnalysisController.energy_usage_billing(userdata,params)
-        resdata = successResponse(data, message="Organization settings")
-        print(resdata)
-        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
-    except ValueError as ve:
-        raise HTTPException(status_code=400, detail=str(ve))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal server error")
-    
-@api_client_routes.post("/report_analysis/new_energy_usage_billing", dependencies=[Depends(mw_user_client)])
-async def new_energy_usage_billing(request: Request,params:EnergyUsageBilling):
-    try:
-        userdata=request.state.user_data
-        data = await ReportAnalysisController.new_energy_usage_billing(userdata,params)
-        resdata = successResponse(data, message="Organization settings")
-        print(resdata)
-        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
-    except ValueError as ve:
-        raise HTTPException(status_code=400, detail=str(ve))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal server error")
     
 # ===========================================================
 # change screen settings

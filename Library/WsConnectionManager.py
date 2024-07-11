@@ -67,5 +67,4 @@ class WsConnectionManager:
             for websocket in connection:
                 await websocket.send_text(message)
 
-    # async def send_one_time_message(self, client_id, device_id, device):
-    #     await EnergyController.send_last_energy_data(client_id, device_id, device)
+  

@@ -94,7 +94,7 @@ async def manage_list_device(params):
     try:
         condition = f"a.client_id = {params.client_id} AND a.device_type='EN'"
         
-        select="a.device_id, a.client_id, a.device, a.device_name, a.do_channel, a.model, a.lat, a.lon, a.imei_no, a.device_type,a.meter_type,a.last_maintenance, DATE_FORMAT(a.created_at, '%Y-%m-%d') AS device_created_at,DATE_FORMAT(a.updated_at, '%Y-%m-%d %H:%i:%s') AS device_updated_at, b.energy_data_id, b.device_id AS b_device_id, b.do_channel AS b_do_channel, b.e1, b.e2, b.e3, b.r, b.y, b.b, b.r_y, b.y_b, b.b_r, b.curr1, b.curr2, b.curr3, b.activep1, b.activep2, b.activep3, b.apparentp1, b.apparentp2, b.apparentp3, b.pf1, b.pf2, b.pf3, b.freq, b.reactvp1, b.reactvp2, b.reactvp3, b.avaragevln, b.avaragevll, b.avaragecurrent, b.totkw, b.totkva, b.totkvar, b.runhr,  DATE_FORMAT(b.date, '%Y-%m-%d') AS date, TIME_FORMAT(b.time, '%H:%i:%s') AS time, DATE_FORMAT(b.created_at, '%Y-%m-%d %H:%i:%s') AS energy_data_created_at, DATE_FORMAT(b.updated_at, '%Y-%m-%d %H:%i:%s') AS energy_data_updated_at"
+        select="a.device_id, a.client_id, a.device, a.device_name, a.do_channel, a.model, a.lat, a.lon, a.imei_no, a.device_type,a.meter_type,a.last_maintenance, DATE_FORMAT(a.created_at, '%Y-%m-%d') AS device_created_at,DATE_FORMAT(a.updated_at, '%Y-%m-%d %H:%i:%s') AS device_updated_at, b.weather_data_id, b.device_id AS b_device_id, b.do_channel AS b_do_channel, b.e1, b.e2, b.e3, b.r, b.y, b.b, b.r_y, b.y_b, b.b_r, b.curr1, b.curr2, b.curr3, b.activep1, b.activep2, b.activep3, b.apparentp1, b.apparentp2, b.apparentp3, b.pf1, b.pf2, b.pf3, b.freq, b.reactvp1, b.reactvp2, b.reactvp3, b.avaragevln, b.avaragevll, b.avaragecurrent, b.totkw, b.totkva, b.totkvar, b.runhr,  DATE_FORMAT(b.date, '%Y-%m-%d') AS date, TIME_FORMAT(b.time, '%H:%i:%s') AS time, DATE_FORMAT(b.created_at, '%Y-%m-%d %H:%i:%s') AS energy_data_created_at, DATE_FORMAT(b.updated_at, '%Y-%m-%d %H:%i:%s') AS energy_data_updated_at"
         
         table="""md_device a LEFT JOIN (SELECT t1.*
     FROM td_weather_data t1
@@ -116,6 +116,17 @@ async def manage_list_device(params):
 
     
 # =========================================================
+@staticmethod
+async def weather_data(params,user_data):
+    try:
+        select="wd.weather_data_id, wd.client_id, wd.device_id, wd.device, wd.tw, wd.temperature, wd.rainfall, wd.rainfall_cumulative, wd.atm_pressure, wd.solar_radiation, wd.humidity, wd.wind_speed, wd.wind_direction, wd.runhr, wd.date, wd.time, wd.created_at, wd.updated_at"
+        condition=f"wd.client_id = {user_data['client_id']} AND wd.device_id = {params.device_id} AND wd.date BETWEEN '{params.start_date}' AND '{params.end_date}'"
+        data = select_data("td_weather_data AS wd",select, condition,order_by="wd.date DESC, wd.time DESC")
+        return data
+    except Exception as e:
+        raise e
+
+
 @staticmethod
 async def temperature(params,user_data):
     try:

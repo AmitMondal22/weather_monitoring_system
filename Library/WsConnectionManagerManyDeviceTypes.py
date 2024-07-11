@@ -62,5 +62,4 @@ class WsConnectionManagerManyDeviceTypes:
         else:
             print("User not in active_connections")
 
-    # async def send_one_time_message(self, client_id, device_id, device):
-    #     await EnergyController.send_last_energy_data(client_id, device_id, device)
+   

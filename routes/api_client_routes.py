@@ -3,13 +3,11 @@ from fastapi import APIRouter, HTTPException, Response,WebSocket,WebSocketDiscon
 from controllers.admin import ClientController, ManageUserController, DeviceManageUserController,DeviceController
 from controllers.unit import UnitController
 from controllers.alert import AlertController
-from controllers.report import ReportAnalysisController
 from controllers.settings import ClientSettingsController
 
 from models.organization_model import AddOrganization, EditOrganization, DeleteOrganization,ListOrganization
 from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,UserDeviceEdit,UserDeviceDelete,ListUsers,UserInfo,ClientId,DeviceInfo
-from models.device_data_model import WeatherData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,TemperatureUsed, VoltageData,OrganizationSettings,OrganizationSettingsList,AddBill,EditOrganization
-from models.report_model import EnergyUsageBilling
+from models.device_data_model import WeatherData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,TemperatureUsed, VoltageData,OrganizationSettings,OrganizationSettingsList,EditOrganization
 from models.client_settings import ClientScreenSettings, ClientScreenSettingsEdit
 
 from Library.DecimalEncoder import DecimalEncoder
@@ -89,15 +87,15 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str, device_id: st
 # ================================================================
 class SendEnergySocket:
     @staticmethod
-    async def send_last_energy_data(client_id, device_id, device):
+    async def send_last_weather_data(client_id, device_id, device):
         try:
             # Lazy import inside the function
             # from Library import WsConnectionManager
             # manager = WsConnectionManager.WsConnectionManager()
             
-            select="energy_data_id, client_id, device_id, e1, e2, e3, r, y, b, r_y, y_b, b_r, curr1, curr2, curr3, activep1, activep2, activep3, apparentp1, apparentp2, apparentp3, pf1, pf2, pf3, freq, reactvp1, reactvp2, reactvp3, avaragevln, avaragevll, avaragecurrent, totkw, totkva, totkvar, runhr, date, time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
+            select="weather_data_id, client_id, device_id,tw, temperature, rainfall, rainfall_cumulative, atm_pressure, solar_radiation, humidity, wind_speed, wind_direction, runhr, date, time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at"
             condition = f"device_id = '{device_id}' AND device ='{device}' AND client_id = '{client_id}'"
-            order_by="energy_data_id DESC"
+            order_by="weather_data_id DESC"
                 
             lastdata = select_one_data("td_weather_data", select, condition, order_by)
            
@@ -394,11 +392,26 @@ async def list_device(request: Request,params:ClientId):
 # =================================================================================================
                 # graphical_view edit and change
 # =================================================================================================
-@api_client_routes.post("/devices/energy_data", dependencies=[Depends(mw_user_client)])
-async def energy_data(request: Request,params:WeatherData):
+# @api_client_routes.post("/devices/energy_data", dependencies=[Depends(mw_user_client)])
+# async def energy_data(request: Request,params:WeatherData):
+#     try:
+#         data = ClientController.energy_data(params)
+#         resdata = successResponse(data, message="devices Data")
+#         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+#     except ValueError as ve:
+#         # If there's a ValueError, return a 400 Bad Request with the error message
+#         raise HTTPException(status_code=400, detail=str(ve))
+#     except Exception as e:
+#         # For any other unexpected error, return a 500 Internal Server Error
+#         raise HTTPException(status_code=500, detail="Internal server error")
+    
+    
+@api_client_routes.post("/report/weather_data", dependencies=[Depends(mw_user_client)])
+async def weather_data(request: Request,params:WeatherData):
     try:
-        data = ClientController.energy_data(params)
-        resdata = successResponse(data, message="devices Data")
+        user_data=request.state.user_data
+        data = DeviceController.weather_data(params,user_data)
+        resdata = successResponse(data, message="weather Data")
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
         # If there's a ValueError, return a 400 Bad Request with the error message
@@ -677,3 +690,5 @@ async def client_screen_settings_edit(request: Request,params:ClientScreenSettin
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
+    
+    

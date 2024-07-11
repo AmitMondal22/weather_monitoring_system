@@ -8,7 +8,7 @@ from controllers.settings import ClientSettingsController
 
 from models.organization_model import AddOrganization, EditOrganization, DeleteOrganization,ListOrganization
 from models.manage_user_model import AddUser, EditUser,DeleteUser,UserDeviceAdd,UserDeviceEdit,UserDeviceDelete,ListUsers,UserInfo,ClientId,DeviceInfo
-from models.device_data_model import WeatherData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,EnergyUsed, VoltageData,OrganizationSettings,OrganizationSettingsList,AddBill,EditOrganization
+from models.device_data_model import WeatherData,AddAlert,DeviceAdd,DeviceEdit,EditAlert,DeleteAlert,TemperatureUsed, VoltageData,OrganizationSettings,OrganizationSettingsList,AddBill,EditOrganization
 from models.report_model import EnergyUsageBilling
 from models.client_settings import ClientScreenSettings, ClientScreenSettingsEdit
 
@@ -409,41 +409,14 @@ async def energy_data(request: Request,params:WeatherData):
     
     
     
+    # =================================================================================================
     
-    
-@api_client_routes.post("/devices/graphical_view/energy_used", dependencies=[Depends(mw_user_client)])
-async def energy_used(request: Request,params:EnergyUsed):
-    # try:
-        user_data=request.state.user_data
-        data = await DeviceController.energy_used(params,user_data)
-        resdata = successResponse(data, message="energy used Data")
-        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
-    # except ValueError as ve:
-    #     raise HTTPException(status_code=400, detail=str(ve))
-    # except Exception as e:
-    #     raise HTTPException(status_code=500, detail="Internal server error")
-    
-
-
-@api_client_routes.post("/devices/graphical_view/voltage", dependencies=[Depends(mw_user_client)])
-async def voltage_data(request: Request,params:EnergyUsed):
+@api_client_routes.post("/devices/graphical_view/temperature", dependencies=[Depends(mw_user_client)])
+async def temperature(request: Request,params:TemperatureUsed):
     try:
         user_data=request.state.user_data
-        data = await DeviceController.voltage_data(params,user_data)
-        resdata = successResponse(data, message="Voltage Data")
-        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
-    except ValueError as ve:
-        raise HTTPException(status_code=400, detail=str(ve))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal server error")
-
-
-@api_client_routes.post("/devices/graphical_view/current", dependencies=[Depends(mw_user_client)])
-async def current_data(request: Request,params:EnergyUsed):
-    try:
-        user_data=request.state.user_data
-        data = await DeviceController.current_data(params,user_data)
-        resdata = successResponse(data, message="Current Data")
+        data = await DeviceController.temperature(params,user_data)
+        resdata = successResponse(data, message="Temperature Data")
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
@@ -451,24 +424,75 @@ async def current_data(request: Request,params:EnergyUsed):
         raise HTTPException(status_code=500, detail="Internal server error")
     
 
-@api_client_routes.post("/devices/graphical_view/power", dependencies=[Depends(mw_user_client)])
-async def power_data(request: Request,params:EnergyUsed):
+
+@api_client_routes.post("/devices/graphical_view/rainfall", dependencies=[Depends(mw_user_client)])
+async def rainfall_data(request: Request,params:TemperatureUsed):
     try:
         user_data=request.state.user_data
-        data = await DeviceController.power_data(params,user_data)
-        resdata = successResponse(data, message="Power Data")
+        data = await DeviceController.rainfall_data(params,user_data)
+        resdata = successResponse(data, message="Rainfall Data")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@api_client_routes.post("/devices/graphical_view/atm_pressure", dependencies=[Depends(mw_user_client)])
+async def atm_pressure(request: Request,params:TemperatureUsed):
+    try:
+        user_data=request.state.user_data
+        data = await DeviceController.atm_pressure_data(params,user_data)
+        resdata = successResponse(data, message="Atomic pressure Data")
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
     
-@api_client_routes.post("/devices/graphical_view/total_power_analisis", dependencies=[Depends(mw_user_client)])
-async def  total_power_analisis(request: Request,params:EnergyUsed):
+
+@api_client_routes.post("/devices/graphical_view/solar_radiation", dependencies=[Depends(mw_user_client)])
+async def solar_radiation(request: Request,params:TemperatureUsed):
     try:
         user_data=request.state.user_data
-        data = await DeviceController.total_power_analisis(params,user_data)
-        resdata = successResponse(data, message="Total Power Analisis Data")
+        data = await DeviceController.solar_radiation_data(params,user_data)
+        resdata = successResponse(data, message="Total solar radiation Data")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+@api_client_routes.post("/devices/graphical_view/humidity", dependencies=[Depends(mw_user_client)])
+async def humidity(request: Request,params:TemperatureUsed):
+    try:
+        user_data=request.state.user_data
+        data = await DeviceController.humidity_data(params,user_data)
+        resdata = successResponse(data, message="Total humidity Data")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+@api_client_routes.post("/devices/graphical_view/wind_direction", dependencies=[Depends(mw_user_client)])
+async def wind_direction(request: Request,params:TemperatureUsed):
+    try:
+        user_data=request.state.user_data
+        data = await DeviceController.wind_direction_data(params,user_data)
+        resdata = successResponse(data, message="wind direction Data")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+@api_client_routes.post("/devices/graphical_view/wind_speed", dependencies=[Depends(mw_user_client)])
+async def wind_speed(request: Request,params:TemperatureUsed):
+    try:
+        user_data=request.state.user_data
+        data = await DeviceController.wind_speed_data(params,user_data)
+        resdata = successResponse(data, message="wind speed Data")
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))

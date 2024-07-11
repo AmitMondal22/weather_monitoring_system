@@ -117,203 +117,72 @@ async def manage_list_device(params):
     
 # =========================================================
 @staticmethod
-async def energy_used(params,user_data):
+async def temperature(params,user_data):
     try:
-        if params.type=="Y" :
-            condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
-            select="ed.energy_data_id, ed.device_id, ed.do_channel, ed.e1, ed.e2, ed.e3, DATE_FORMAT(ed.date, '%Y-%m-%d') AS date, TIME_FORMAT(ed.time, '%H:%i:%s') AS time "
-            table =f"td_weather_data AS ed INNER JOIN (SELECT  MAX(energy_data_id) AS max_energy_data_id,  YEAR(date) AS year, MONTH(date) AS month FROM td_weather_data WHERE client_id = {user_data['client_id']} AND device_id = {params.device_id} GROUP BY  YEAR(date), MONTH(date) ) AS sub_ed ON ed.energy_data_id = sub_ed.max_energy_data_id"
-            data = select_data(table,select, condition,order_by="ed.date DESC, ed.time DESC")
-        elif params.type =="M":
-            condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
-            select="ed.energy_data_id, ed.device_id, ed.do_channel, ed.e1, ed.e2, ed.e3, DATE_FORMAT(ed.date, '%Y-%m-%d') AS date, TIME_FORMAT(ed.time, '%H:%i:%s') AS time"
-            table=f"""td_weather_data AS ed
-                            INNER JOIN (
-                                SELECT
-                                    date,
-                                    MAX(time) AS max_time
-                                FROM
-                                    td_weather_data
-                                WHERE
-                                    client_id = {user_data['client_id']} AND device_id = {params.device_id}
-                                    AND date BETWEEN DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND CURDATE()
-                                GROUP BY
-                                    date
-                            ) AS sub_ed ON ed.date = sub_ed.date AND ed.time = sub_ed.max_time"""
-            data = select_data(table,select, condition,order_by="date DESC, time DESC")
-        elif params.type =="D":
-            condition = f"client_id = {user_data['client_id']} AND device_id = {params.device_id} AND date = CURDATE() AND (date, time) IN ( SELECT date, MAX(time) FROM td_weather_data WHERE date = CURDATE() GROUP BY date, HOUR(time))"
-            select = "energy_data_id, device_id, do_channel, e1, e2, e3, DATE_FORMAT(date, '%Y-%m-%d') AS date, TIME_FORMAT(time, '%H:%i:%s') AS time"
-            data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
-        else:
-            return "Invalid type"
+        select="ed.date, ed.time, ed.temperature"
+        condition=f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
+        data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
         return data
     except Exception as e:
         raise e
     
 @staticmethod
-async def voltage_data(params,user_data):
+async def rainfall_data(params,user_data):
     try:
-        if params.type=="Y" :
-                condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
-                select="ed.energy_data_id, ed.device_id, ed.do_channel, ed.r, ed.y, ed.b, ed.r_y, ed.y_b, ed.b_r, DATE_FORMAT(ed.date, '%Y-%m-%d') AS date, TIME_FORMAT(ed.time, '%H:%i:%s') AS time "
-                table =f"td_weather_data AS ed INNER JOIN (SELECT  MAX(energy_data_id) AS max_energy_data_id,  YEAR(date) AS year, MONTH(date) AS month FROM td_weather_data WHERE client_id = {user_data['client_id']} AND device_id = {params.device_id} GROUP BY  YEAR(date), MONTH(date) ) AS sub_ed ON ed.energy_data_id = sub_ed.max_energy_data_id"
-                data = select_data(table,select, condition,order_by="ed.date DESC, ed.time DESC")
-        elif params.type =="M":
-            condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
-            select="ed.energy_data_id, ed.device_id, ed.do_channel, ed.r, ed.y, ed.b, ed.r_y, ed.y_b, ed.b_r, DATE_FORMAT(ed.date, '%Y-%m-%d') AS date, TIME_FORMAT(ed.time, '%H:%i:%s') AS time"
-            table=f"""td_weather_data AS ed
-                            INNER JOIN (
-                                SELECT
-                                    date,
-                                    MAX(time) AS max_time
-                                FROM
-                                    td_weather_data
-                                WHERE
-                                    client_id = {user_data['client_id']} AND device_id = {params.device_id}
-                                    AND date BETWEEN DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND CURDATE()
-                                GROUP BY
-                                    date
-                            ) AS sub_ed ON ed.date = sub_ed.date AND ed.time = sub_ed.max_time"""
-            data = select_data(table,select, condition,order_by="date DESC, time DESC")
-        elif params.type =="D":
-            condition = f"client_id = {user_data['client_id']} AND device_id = {params.device_id} AND date = CURDATE() AND (date, time) IN ( SELECT date, MAX(time) FROM td_weather_data WHERE date = CURDATE() GROUP BY date, HOUR(time))"
-            select = "energy_data_id, device_id, do_channel, ed.r, ed.y, ed.b, ed.r_y, ed.y_b, ed.b_r, DATE_FORMAT(date, '%Y-%m-%d') AS date, TIME_FORMAT(time, '%H:%i:%s') AS time"
-            data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
-        else:
-            return "Invalid type"
+        select="ed.date, ed.time, ed.rainfall, ed.rainfall_cumulative"
+        condition=f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
+        data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
         return data
     except Exception as e:
         raise e
 
 @staticmethod
-async def current_data(params,user_data):
+async def atm_pressure_data(params,user_data):
     try:
-        # end_date_time=params.end_date_time
-        # start_date_time=params.start_date_time
-        
-        # condition = f"client_id = {user_data['client_id']} AND device_id = {params.device_id} AND created_at BETWEEN '{start_date_time.strftime('%Y-%m-%d %H:%M:%S')}' AND '{end_date_time.strftime('%Y-%m-%d %H:%M:%S')}'"
-        # select="energy_data_id, device_id, do_channel, curr1, curr2, curr3, DATE_FORMAT(date, '%Y-%m-%d') AS date, TIME_FORMAT(time, '%H:%i:%s') AS time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
-        # data = select_data("td_weather_data",select, condition,order_by="energy_data_id DESC")
-        # return data
-        if params.type=="Y" :
-                condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
-                select="ed.energy_data_id, ed.device_id, ed.do_channel, ed.curr1, ed.curr2, ed.curr3, DATE_FORMAT(ed.date, '%Y-%m-%d') AS date, TIME_FORMAT(ed.time, '%H:%i:%s') AS time "
-                table =f"td_weather_data AS ed INNER JOIN (SELECT  MAX(energy_data_id) AS max_energy_data_id,  YEAR(date) AS year, MONTH(date) AS month FROM td_weather_data WHERE client_id = {user_data['client_id']} AND device_id = {params.device_id} GROUP BY  YEAR(date), MONTH(date) ) AS sub_ed ON ed.energy_data_id = sub_ed.max_energy_data_id"
-                data = select_data(table,select, condition,order_by="ed.date DESC, ed.time DESC")
-        elif params.type =="M":
-            condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
-            select="ed.energy_data_id, ed.device_id, ed.do_channel, ed.curr1, ed.curr2, ed.curr3, DATE_FORMAT(ed.date, '%Y-%m-%d') AS date, TIME_FORMAT(ed.time, '%H:%i:%s') AS time"
-            table=f"""td_weather_data AS ed
-                            INNER JOIN (
-                                SELECT
-                                    date,
-                                    MAX(time) AS max_time
-                                FROM
-                                    td_weather_data
-                                WHERE
-                                    client_id = {user_data['client_id']} AND device_id = {params.device_id}
-                                    AND date BETWEEN DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND CURDATE()
-                                GROUP BY
-                                    date
-                            ) AS sub_ed ON ed.date = sub_ed.date AND ed.time = sub_ed.max_time"""
-            data = select_data(table,select, condition,order_by="date DESC, time DESC")
-        elif params.type =="D":
-            condition = f"client_id = {user_data['client_id']} AND device_id = {params.device_id} AND date = CURDATE() AND (date, time) IN ( SELECT date, MAX(time) FROM td_weather_data WHERE date = CURDATE() GROUP BY date, HOUR(time))"
-            select = "energy_data_id, device_id, do_channel, ed.curr1, ed.curr2, ed.curr3, DATE_FORMAT(date, '%Y-%m-%d') AS date, TIME_FORMAT(time, '%H:%i:%s') AS time"
-            data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
-        else:
-            return "Invalid type"
+        select="ed.date, ed.time, ed.atm_pressure"
+        condition=f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
+        data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
         return data
     except Exception as e:
         raise e
     
     
 @staticmethod
-async def power_data(params,user_data):
+async def solar_radiation_data(params,user_data):
     try:
-        # end_date_time=params.end_date_time
-        # start_date_time=params.start_date_time
-    
-        # condition = f"client_id = {user_data['client_id']} AND device_id = {params.device_id} AND created_at BETWEEN '{start_date_time.strftime('%Y-%m-%d %H:%M:%S')}' AND '{end_date_time.strftime('%Y-%m-%d %H:%M:%S')}'"
-        # select="energy_data_id, device_id, do_channel, activep1, activep2, activep3, apparentp1, apparentp2, apparentp3, pf1, pf2, pf3, DATE_FORMAT(date, '%Y-%m-%d') AS date, TIME_FORMAT(time, '%H:%i:%s') AS time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
-        # data = select_data("td_weather_data",select, condition,order_by="energy_data_id DESC")
-        # return data
-    
-        if params.type=="Y" :
-                condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
-                select="ed.energy_data_id, ed.device_id, ed.do_channel, ed.activep1, ed.activep2, ed.activep3, ed.apparentp1, ed.apparentp2, ed.apparentp3, ed.pf1, ed.pf2, ed.pf3, DATE_FORMAT(ed.date, '%Y-%m-%d') AS date, TIME_FORMAT(ed.time, '%H:%i:%s') AS time "
-                table =f"td_weather_data AS ed INNER JOIN (SELECT  MAX(energy_data_id) AS max_energy_data_id,  YEAR(date) AS year, MONTH(date) AS month FROM td_weather_data WHERE client_id = {user_data['client_id']} AND device_id = {params.device_id} GROUP BY  YEAR(date), MONTH(date) ) AS sub_ed ON ed.energy_data_id = sub_ed.max_energy_data_id"
-                data = select_data(table,select, condition,order_by="ed.date DESC, ed.time DESC")
-        elif params.type =="M":
-            condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
-            select="ed.energy_data_id, ed.device_id, ed.do_channel, ed.activep1, ed.activep2, ed.activep3, ed.apparentp1, ed.apparentp2, ed.apparentp3, ed.pf1, ed.pf2, ed.pf3, DATE_FORMAT(ed.date, '%Y-%m-%d') AS date, TIME_FORMAT(ed.time, '%H:%i:%s') AS time"
-            table=f"""td_weather_data AS ed
-                            INNER JOIN (
-                                SELECT
-                                    date,
-                                    MAX(time) AS max_time
-                                FROM
-                                    td_weather_data
-                                WHERE
-                                    client_id = {user_data['client_id']} AND device_id = {params.device_id}
-                                    AND date BETWEEN DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND CURDATE()
-                                GROUP BY
-                                    date
-                            ) AS sub_ed ON ed.date = sub_ed.date AND ed.time = sub_ed.max_time"""
-            data = select_data(table,select, condition,order_by="date DESC, time DESC")
-        elif params.type =="D":
-            condition = f"client_id = {user_data['client_id']} AND device_id = {params.device_id} AND date = CURDATE() AND (date, time) IN ( SELECT date, MAX(time) FROM td_weather_data WHERE date = CURDATE() GROUP BY date, HOUR(time))"
-            select = "energy_data_id, device_id, do_channel, ed.activep1, ed.activep2, ed.activep3, ed.apparentp1, ed.apparentp2, ed.apparentp3, ed.pf1, ed.pf2, ed.pf3, DATE_FORMAT(date, '%Y-%m-%d') AS date, TIME_FORMAT(time, '%H:%i:%s') AS time"
-            data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
-        else:
-            return "Invalid type"
+        select="ed.date, ed.time, ed.solar_radiation"
+        condition=f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
+        data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
         return data
     except Exception as e:
         raise e
     
 @staticmethod
-async def total_power_analisis(params,user_data):
+async def humidity_data(params,user_data):
     try:
-        # end_date_time=params.end_date_time
-        # start_date_time=params.start_date_time
-        # condition = f"client_id = {user_data['client_id']} AND device_id = {params.device_id} AND created_at BETWEEN '{start_date_time.strftime('%Y-%m-%d %H:%M:%S')}' AND '{end_date_time.strftime('%Y-%m-%d %H:%M:%S')}'"
-        # select="energy_data_id, device_id, do_channel, totkw, totkva, totkvar, runhr, DATE_FORMAT(date, '%Y-%m-%d') AS date, TIME_FORMAT(time, '%H:%i:%s') AS time, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
-        # data = select_data("td_weather_data",select, condition,order_by="energy_data_id DESC")
-        # return data
-    
-    
-    
-        if params.type=="Y" :
-                condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
-                select="ed.energy_data_id, ed.device_id, ed.do_channel,ed.totkw, ed.totkva, ed.totkvar, ed.runhr, DATE_FORMAT(ed.date, '%Y-%m-%d') AS date, TIME_FORMAT(ed.time, '%H:%i:%s') AS time "
-                table =f"td_weather_data AS ed INNER JOIN (SELECT  MAX(energy_data_id) AS max_energy_data_id,  YEAR(date) AS year, MONTH(date) AS month FROM td_weather_data WHERE client_id = {user_data['client_id']} AND device_id = {params.device_id} GROUP BY  YEAR(date), MONTH(date) ) AS sub_ed ON ed.energy_data_id = sub_ed.max_energy_data_id"
-                data = select_data(table,select, condition,order_by="ed.date DESC, ed.time DESC")
-        elif params.type =="M":
-            condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
-            select="ed.energy_data_id, ed.device_id, ed.do_channel,ed.totkw, ed.totkva, ed.totkvar, ed.runhr, DATE_FORMAT(ed.date, '%Y-%m-%d') AS date, TIME_FORMAT(ed.time, '%H:%i:%s') AS time"
-            table=f"""td_weather_data AS ed
-                            INNER JOIN (
-                                SELECT
-                                    date,
-                                    MAX(time) AS max_time
-                                FROM
-                                    td_weather_data
-                                WHERE
-                                    client_id = {user_data['client_id']} AND device_id = {params.device_id}
-                                    AND date BETWEEN DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND CURDATE()
-                                GROUP BY
-                                    date
-                            ) AS sub_ed ON ed.date = sub_ed.date AND ed.time = sub_ed.max_time"""
-            data = select_data(table,select, condition,order_by="date DESC, time DESC")
-        elif params.type =="D":
-            condition = f"client_id = {user_data['client_id']} AND device_id = {params.device_id} AND date = CURDATE() AND (date, time) IN ( SELECT date, MAX(time) FROM td_weather_data WHERE date = CURDATE() GROUP BY date, HOUR(time))"
-            select = "energy_data_id, device_id, do_channel,ed.totkw, ed.totkva, ed.totkvar, ed.runhr, DATE_FORMAT(date, '%Y-%m-%d') AS date, TIME_FORMAT(time, '%H:%i:%s') AS time"
-            data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
-        else:
-            return "Invalid type"
+        select="ed.date, ed.time, ed.humidity"
+        condition=f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
+        data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
         return data
+    except Exception as e:
+        raise e
     
+@staticmethod
+async def wind_speed_data(params,user_data):
+    try:
+        select="ed.date, ed.time, ed.wind_speed,ed.wind_direction"
+        condition=f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
+        data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
+        return data
+    except Exception as e:
+        raise e
+    
+async def wind_direction_data(params,user_data):
+    try:
+        select="ed.date, ed.time, ed.wind_speed,ed.wind_direction"
+        condition=f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}"
+        data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
+        return data
     except Exception as e:
         raise e
     

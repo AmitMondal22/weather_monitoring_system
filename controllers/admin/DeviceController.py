@@ -7,9 +7,9 @@ from routes.mqtt_routes import subscribe_topics
 @staticmethod
 async def list_device(client_id):
     try:
-        select="device_id, device,device_type,meter_type"
+        select="device_id, device"
         # select="device_id, device, do_channel, model, lat, lon, imei_no, last_maintenance, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
-        condition=f"client_id={client_id} AND device_type='EN'"
+        condition=f"client_id={client_id}"
         data = select_data("md_device", select, condition)
         return data
     except Exception as e:
@@ -19,9 +19,9 @@ async def list_device(client_id):
 @staticmethod
 async def user_device_list(client_id, user_id, organization_id):
     try:
-        select="d.device_id, d.device, d.do_channel, d.model, d.lat, d.lon, d.imei_no,d.device_type,d.meter_type, d.last_maintenance, DATE_FORMAT(d.created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(d.updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
+        select="d.device_id, d.device, d.do_channel, d.model, d.lat, d.lon, d.imei_no, d.last_maintenance, DATE_FORMAT(d.created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(d.updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
         
-        condition = f"d.device_id = mud.device_id AND d.client_id = mud.client_id AND mud.client_id = {client_id} AND mud.user_id = {user_id} AND mud.organization_id = {organization_id} AND d.device_type='EN'"
+        condition = f"d.device_id = mud.device_id AND d.client_id = mud.client_id AND mud.client_id = {client_id} AND mud.user_id = {user_id} AND mud.organization_id = {organization_id}"
         find_devices=select_data("md_device AS d, md_manage_user_device AS mud", select, condition,order_by="d.device_id ASC")
         print("find_devices>>>>>>>>>>>>>>>>>",find_devices)
         return find_devices
@@ -32,8 +32,8 @@ async def user_device_list(client_id, user_id, organization_id):
 @staticmethod
 async def device_info(params,userdata):
     try:
-        condition = f"client_id={userdata['client_id']} AND device_id = {params.device_id} AND device_type='EN'"
-        select="device_id, client_id, device, device_name, do_channel, model, lat, lon, imei_no, last_maintenance,device_type,meter_type, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
+        condition = f"client_id={userdata['client_id']} AND device_id = {params.device_id}"
+        select="device_id, client_id, device, device_name, do_channel, model, lat, lon, imei_no, last_maintenance, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
         data = select_one_data("md_device",select, condition,order_by="device_id DESC")
         
         select2="count(a.alert_id) alert, a.alert_type, a.unit_id,u.unit,u.unit_name"
@@ -49,7 +49,7 @@ async def add_device(params):
     try:
         
         
-        column="client_id, device, device_name, do_channel, model, lat, lon, imei_no, device_type, meter_type, last_maintenance, created_at"
+        column="client_id, device, device_name, do_channel, model, lat, lon, imei_no, last_maintenance, created_at"
         
         rows_data = []
         for params_data in params:
@@ -62,8 +62,6 @@ async def add_device(params):
                 "lat": params_data.lat,
                 "lon": params_data.lon,
                 "imei_no": params_data.imei_no,
-                "device_type": params_data.device_type,
-                "meter_type": params_data.meter_type,
                 "last_maintenance": params_data.last_maintenance,
                 "created_at": get_current_datetime()  # Assuming get_current_datetime() returns the current datetime
             }
@@ -81,7 +79,7 @@ async def add_device(params):
 async def edit_device(params):
     try:
         condition = f"device_id = {params.device_id} AND client_id = {params.client_id}"
-        columns={"device":params.device, "device_name":params.device_name, "do_channel":params.do_channel, "model":params.model, "lat":params.lat, "lon":params.lon, "imei_no":params.imei_no, "device_type" :params.device_type, "meter_type":params.meter_type, "updated_at":get_current_datetime()}
+        columns={"device":params.device, "device_name":params.device_name, "do_channel":params.do_channel, "model":params.model, "lat":params.lat, "lon":params.lon, "imei_no":params.imei_no, "updated_at":get_current_datetime()}
         data = update_data("md_device", columns, condition)
         print(data)
         return data
@@ -92,9 +90,9 @@ async def edit_device(params):
 @staticmethod
 async def manage_list_device(params):
     try:
-        condition = f"a.client_id = {params.client_id} AND a.device_type='EN'"
+        condition = f"a.client_id = {params.client_id}"
         
-        select="a.device_id, a.client_id, a.device, a.device_name, a.do_channel, a.model, a.lat, a.lon, a.imei_no, a.device_type,a.meter_type,a.last_maintenance, DATE_FORMAT(a.created_at, '%Y-%m-%d') AS device_created_at,DATE_FORMAT(a.updated_at, '%Y-%m-%d %H:%i:%s') AS device_updated_at, b.weather_data_id, b.device_id AS b_device_id, b.do_channel AS b_do_channel, b.e1, b.e2, b.e3, b.r, b.y, b.b, b.r_y, b.y_b, b.b_r, b.curr1, b.curr2, b.curr3, b.activep1, b.activep2, b.activep3, b.apparentp1, b.apparentp2, b.apparentp3, b.pf1, b.pf2, b.pf3, b.freq, b.reactvp1, b.reactvp2, b.reactvp3, b.avaragevln, b.avaragevll, b.avaragecurrent, b.totkw, b.totkva, b.totkvar, b.runhr,  DATE_FORMAT(b.date, '%Y-%m-%d') AS date, TIME_FORMAT(b.time, '%H:%i:%s') AS time, DATE_FORMAT(b.created_at, '%Y-%m-%d %H:%i:%s') AS energy_data_created_at, DATE_FORMAT(b.updated_at, '%Y-%m-%d %H:%i:%s') AS energy_data_updated_at"
+        select="a.device_id, a.client_id, a.device, a.device_name, a.do_channel, a.model, a.lat, a.lon, a.imei_no, a.last_maintenance, DATE_FORMAT(a.created_at, '%Y-%m-%d') AS device_created_at,DATE_FORMAT(a.updated_at, '%Y-%m-%d %H:%i:%s') AS device_updated_at, b.weather_data_id, b.device_id AS b_device_id, b.do_channel AS b_do_channel, b.e1, b.e2, b.e3, b.r, b.y, b.b, b.r_y, b.y_b, b.b_r, b.curr1, b.curr2, b.curr3, b.activep1, b.activep2, b.activep3, b.apparentp1, b.apparentp2, b.apparentp3, b.pf1, b.pf2, b.pf3, b.freq, b.reactvp1, b.reactvp2, b.reactvp3, b.avaragevln, b.avaragevll, b.avaragecurrent, b.totkw, b.totkva, b.totkvar, b.runhr,  DATE_FORMAT(b.date, '%Y-%m-%d') AS date, TIME_FORMAT(b.time, '%H:%i:%s') AS time, DATE_FORMAT(b.created_at, '%Y-%m-%d %H:%i:%s') AS energy_data_created_at, DATE_FORMAT(b.updated_at, '%Y-%m-%d %H:%i:%s') AS energy_data_updated_at"
         
         table="""md_device a LEFT JOIN (SELECT t1.*
     FROM td_weather_data t1

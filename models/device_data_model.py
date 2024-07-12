@@ -167,21 +167,21 @@ class DeviceAdd(BaseModel):
     lat: str
     lon: str
     imei_no: str
-    device_type: str
-    meter_type: str
+    # device_type: str
+    # meter_type: str
     last_maintenance: date
-    @validator('meter_type')
-    def validate_meter_type(cls, v):
-        validate_meter_type = {"ENSF", "ENTF"}
-        if v not in validate_meter_type:
-            raise ValueError('Invalid alert status')
-        return v
-    @validator('device_type')
-    def validate_device_type(cls, v):
-        valid_device_type = {"EN", "UPS"}
-        if v not in valid_device_type:
-            raise ValueError('Invalid alert status')
-        return v
+    # @validator('meter_type')
+    # def validate_meter_type(cls, v):
+    #     validate_meter_type = {"ENSF", "ENTF"}
+    #     if v not in validate_meter_type:
+    #         raise ValueError('Invalid alert status')
+    #     return v
+    # @validator('device_type')
+    # def validate_device_type(cls, v):
+    #     valid_device_type = {"EN", "UPS"}
+    #     if v not in valid_device_type:
+    #         raise ValueError('Invalid alert status')
+    #     return v
 
 class DeviceEdit(BaseModel):
     device_id:int
@@ -193,20 +193,20 @@ class DeviceEdit(BaseModel):
     lat: str
     lon: str
     imei_no: str
-    device_type: str
-    meter_type: str
-    @validator('meter_type')
-    def validate_meter_type(cls, v):
-        valid_meter_type = {"ENSF", "ENTF"}
-        if v not in valid_meter_type:
-            raise ValueError('Invalid alert status')
-        return v
-    @validator('device_type')
-    def validate_device_type(cls, v):
-        valid_device_type = {"EN", "UPS"}
-        if v not in valid_device_type:
-            raise ValueError('Invalid alert status')
-        return v
+    # device_type: str
+    # meter_type: str
+    # @validator('meter_type')
+    # def validate_meter_type(cls, v):
+    #     valid_meter_type = {"ENSF", "ENTF"}
+    #     if v not in valid_meter_type:
+    #         raise ValueError('Invalid alert status')
+    #     return v
+    # @validator('device_type')
+    # def validate_device_type(cls, v):
+    #     valid_device_type = {"EN", "UPS"}
+    #     if v not in valid_device_type:
+    #         raise ValueError('Invalid alert status')
+    #     return v
     
 class UserDeviceList(BaseModel):
     client_id: int

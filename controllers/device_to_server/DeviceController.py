@@ -8,8 +8,8 @@ from hooks.update_event_hooks import update_topics
 @staticmethod
 async def device_auto_register(data):
     try:
-        select="device_id, device, do_channel, model, lat, lon, imei_no, last_maintenance,device_type,meter_type, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
-        find_device=select_one_data("md_device", select, f"imei_no = '{data.imei_no}' AND device_type = 'EN'")
+        select="device_id, device, do_channel, model, lat, lon, imei_no, last_maintenance, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
+        find_device=select_one_data("md_device", select, f"imei_no = '{data.imei_no}' ")
 
         if find_device is not None:
             device_data={"device": find_device['device'], "do_channel": find_device['do_channel'], "model": find_device['model'], "lat": find_device['lat'], "lon": find_device['lon'], "imei_no": find_device['imei_no'], "created_at": find_device['created_at'], "updated_at": find_device['updated_at']}
@@ -41,7 +41,7 @@ async def device_auto_register(data):
 @staticmethod
 async def checked_devices(data):
     try:
-        select="device_id, device, do_channel, model, lat, lon, imei_no, last_maintenance,device_type,meter_type, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
+        select="device_id, device, do_channel, model, lat, lon, imei_no, last_maintenance, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
         condition = f"device = '{data.device}'"
         find_devices=select_one_data("md_device", select, condition,None)
         print("find_devices>>>>>>>>>>>>>>>>>",find_devices)
@@ -59,7 +59,7 @@ async def checked_devices(data):
 @staticmethod
 async def user_device_list(data):
     try:
-        select="d.device_id, d.device, d.do_channel, d.model, d.lat, d.lon, d.imei_no,d.device_type,d.meter_type, d.last_maintenance, DATE_FORMAT(d.created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(d.updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
+        select="d.device_id, d.device, d.do_channel, d.model, d.lat, d.lon, d.imei_no, d.last_maintenance, DATE_FORMAT(d.created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(d.updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
         condition = f"d.device_id = mud.device_id AND d.client_id = mud.client_id AND mud.client_id = {data.client_id} AND mud.user_id = {data.user_id} AND mud.organization_id = {data.organization_id}"
         find_devices=select_data("md_device AS d, md_manage_user_device AS mud", select, condition,None)
         print("find_devices>>>>>>>>>>>>>>>>>",find_devices)

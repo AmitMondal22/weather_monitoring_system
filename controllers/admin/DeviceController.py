@@ -36,11 +36,13 @@ async def device_info(params,userdata):
         select="device_id, client_id, device, device_name, do_channel, model, lat, lon, imei_no, last_maintenance, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
         data = select_one_data("md_device",select, condition,order_by="device_id DESC")
         
-        select2="count(a.alert_id) alert, a.alert_type, a.unit_id,u.unit,u.unit_name"
-        condition2 = f"a.unit_id=u.unit_id AND a.client_id={userdata['client_id']} AND a.device_id = {params.device_id} GROUP BY a.alert_type, a.unit_id, u.unit, u.unit_name"
-        table2="td_alert AS a, md_unit AS u"
-        alert=select_data(table2,select2, condition2)
-        return {"data":data, "data2":alert}
+        # select2="count(a.alert_id) alert, a.alert_type, a.unit_id,u.unit,u.unit_name"
+        # condition2 = f"a.unit_id=u.unit_id AND a.client_id={userdata['client_id']} AND a.device_id = {params.device_id} GROUP BY a.alert_type, a.unit_id, u.unit, u.unit_name"
+        # table2="td_alert AS a, md_unit AS u"
+        # alert=select_data(table2,select2, condition2)
+        
+        return {"data":data}
+        # return {"data":data, "data2":alert}
     except Exception as e:
         raise e
 

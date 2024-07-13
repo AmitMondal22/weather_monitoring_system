@@ -181,7 +181,7 @@ async def humidity_data(params,user_data):
 @staticmethod
 async def wind_speed_data(params,user_data):
     try:
-        select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time, ed.date, ed.time, ed.wind_speed,ed.wind_direction"
+        select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time, ed.date, ed.time, ed.wind_speed"
         condition=f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id} AND ed.date ='{params.start_date}'"
         data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
         return data
@@ -190,7 +190,8 @@ async def wind_speed_data(params,user_data):
     
 async def wind_direction_data(params,user_data):
     try:
-        select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time, ed.date, ed.time, ed.wind_speed,ed.wind_direction"
+        # select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time,ed.date, ed.time, ed.wind_speed,ed.wind_direction"
+        select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time,ed.date, ed.time,ed.wind_direction"
         condition=f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id} AND ed.date ='{params.start_date}'"
         data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
         return data

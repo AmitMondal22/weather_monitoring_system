@@ -130,7 +130,7 @@ async def weather_data(params,user_data):
 @staticmethod
 async def temperature(params,user_data):
     try:
-        select="ed.date, ed.time, ed.temperature"
+        select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time, ed.date, ed.time, ed.temperature"
         condition=f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id} AND ed.date ='{params.start_date}'"
         data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
         return data
@@ -140,7 +140,7 @@ async def temperature(params,user_data):
 @staticmethod
 async def rainfall_data(params,user_data):
     try:
-        select="ed.date, ed.time, ed.rainfall, ed.rainfall_cumulative"
+        select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time, ed.date, ed.time, ed.rainfall, ed.rainfall_cumulative"
         condition=f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id} AND ed.date ='{params.start_date}'"
         data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
         return data
@@ -150,7 +150,7 @@ async def rainfall_data(params,user_data):
 @staticmethod
 async def atm_pressure_data(params,user_data):
     try:
-        select="ed.date, ed.time, ed.atm_pressure"
+        select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time, ed.date, ed.time, ed.atm_pressure"
         condition=f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id} AND ed.date ='{params.start_date}'"
         data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
         return data
@@ -161,7 +161,7 @@ async def atm_pressure_data(params,user_data):
 @staticmethod
 async def solar_radiation_data(params,user_data):
     try:
-        select="ed.date, ed.time, ed.solar_radiation"
+        select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time, ed.date, ed.time, ed.solar_radiation"
         condition=f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id} AND ed.date ='{params.start_date}'"
         data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
         return data
@@ -171,7 +171,7 @@ async def solar_radiation_data(params,user_data):
 @staticmethod
 async def humidity_data(params,user_data):
     try:
-        select="ed.date, ed.time, ed.humidity"
+        select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time, ed.date, ed.time, ed.humidity"
         condition=f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id} AND ed.date ='{params.start_date}'"
         data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
         return data
@@ -181,7 +181,7 @@ async def humidity_data(params,user_data):
 @staticmethod
 async def wind_speed_data(params,user_data):
     try:
-        select="ed.date, ed.time, ed.wind_speed,ed.wind_direction"
+        select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time, ed.date, ed.time, ed.wind_speed,ed.wind_direction"
         condition=f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id} AND ed.date ='{params.start_date}'"
         data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
         return data
@@ -190,7 +190,7 @@ async def wind_speed_data(params,user_data):
     
 async def wind_direction_data(params,user_data):
     try:
-        select="ed.date, ed.time, ed.wind_speed,ed.wind_direction"
+        select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time, ed.date, ed.time, ed.wind_speed,ed.wind_direction"
         condition=f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id} AND ed.date ='{params.start_date}'"
         data = select_data("td_weather_data AS ed",select, condition,order_by="date DESC, time DESC")
         return data

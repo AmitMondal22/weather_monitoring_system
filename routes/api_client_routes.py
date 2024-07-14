@@ -410,8 +410,9 @@ async def list_device(request: Request,params:ClientId):
 async def weather_data(request: Request,params:WeatherData):
     try:
         user_data=request.state.user_data
-        data = DeviceController.weather_data(params,user_data)
+        data = await DeviceController.weather_data(params,user_data)
         resdata = successResponse(data, message="weather Data")
+        print(">>>>>>>>>>>>>>>>>>>>>",resdata)
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
         # If there's a ValueError, return a 400 Bad Request with the error message
@@ -494,6 +495,7 @@ async def wind_direction(request: Request,params:TemperatureUsed):
         user_data=request.state.user_data
         data = await DeviceController.wind_direction_data(params,user_data)
         resdata = successResponse(data, message="wind direction Data")
+       
         return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))

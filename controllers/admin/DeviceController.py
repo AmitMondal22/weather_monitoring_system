@@ -122,6 +122,7 @@ async def weather_data(params,user_data):
         select="wd.weather_data_id, wd.client_id, wd.device_id, wd.device, wd.tw, wd.temperature, wd.rainfall, wd.rainfall_cumulative, wd.atm_pressure, wd.solar_radiation, wd.humidity, wd.wind_speed, wd.wind_direction, wd.runhr, wd.date, wd.time, wd.created_at, wd.updated_at"
         condition=f"wd.client_id = {user_data['client_id']} AND wd.device_id = {params.device_id} AND wd.date BETWEEN '{params.start_date}' AND '{params.end_date}'"
         data = select_data("td_weather_data AS wd",select, condition,order_by="wd.date DESC, wd.time DESC")
+        # print("weather_data>>>>>>>>>>>>>>>>>",data)
         return data
     except Exception as e:
         raise e

@@ -76,7 +76,7 @@ async def send_last_weather_data(client_id, device_id, device):
                             AND td.client_id = {client_id}
                         ORDER BY 
                             td.weather_data_id DESC LIMIT 10"""
-        lastdata10=custom_select_sql_query(custom_sql10,None)
+        lastdata10=custom_select_sql_query(custom_sql10,1)
         
         
         

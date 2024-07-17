@@ -66,13 +66,27 @@ async def send_last_weather_data(client_id, device_id, device):
                             td.weather_data_id DESC LIMIT 1"""
         lastdata=custom_select_sql_query(custom_sql,None)
         
+        
+        custom_sql10=f""" SELECT *
+                        FROM 
+                            td_weather_data td
+                        WHERE 
+                            td.device_id = {device_id}
+                            AND td.device = '{device}'
+                            AND td.client_id = {client_id}
+                        ORDER BY 
+                            td.weather_data_id DESC LIMIT 10"""
+        lastdata10=custom_select_sql_query(custom_sql10,None)
+        
+        
+        
 
         # background_tasks.add_task(AlertLibrary.send_alert, client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
         
         # await AlertLibrary.send_alert(client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
         
         # await manager.send_personal_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
-        twodata={"lastdata":lastdata}
+        twodata={"lastdata":lastdata,"last10row":lastdata10}
         await sennd_ws_message("WMS",client_id, device_id, device, json.dumps(twodata, cls=DecimalEncoder))
        
         return json.dumps(lastdata, cls=DecimalEncoder)

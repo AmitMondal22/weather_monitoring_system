@@ -27,8 +27,8 @@ class WeatherDeviceData(BaseModel):
     TW: int
     
     C1: float #TEMP
-    C7: float #RAIN
-    RAIN_CUM: Optional[float] = 0.00
+    PULSE1: float #RAIN
+    PULSE2: Optional[float] = 0.00
     C3: float #ATM_PRESS
     C6: float #SOLAR_RAD
     C2: float #HUMID

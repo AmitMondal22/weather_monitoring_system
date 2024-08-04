@@ -30,7 +30,7 @@ async def get_weather_data(data:device_data_model.WeatherDeviceData,client_id,de
         columns = "client_id, device_id, device,tw,temperature, rainfall, rainfall_cumulative, atm_pressure, solar_radiation, humidity, wind_speed, wind_direction, runhr, date, time, created_at"
 
         # value = f"{client_id}, {device_id}, '{device}',{data.TW}, {data.C1}, {data.C4}, {data.RAIN_CUM}, {data.C3}, {data.C6}, {data.C2}, {data.C4}, {data.C5}, {data.RUNHR}, '{formatted_date}', '{formatted_time}', '{current_datetime}'"
-        value = f"{client_id}, {device_id}, '{device}',{data.TW}, {data.C1}, {data.C7}, {0.00}, {data.C3}, {data.C6}, {data.C2}, {data.C4}, {data.C5}, {0.00}, '{formatted_date}', '{formatted_time}', '{current_datetime}'"
+        value = f"{client_id}, {device_id}, '{device}',{data.TW}, {data.C1}, {data.PULSE1}, {data.PULSE2}, {data.C3}, {data.C6}, {data.C2}, {data.C4}, {data.C5}, {0.00}, '{formatted_date}', '{formatted_time}', '{current_datetime}'"
         
         print("value",value)
         weather_data_id = insert_data("td_weather_data", columns, value)

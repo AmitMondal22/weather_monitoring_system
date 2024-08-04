@@ -23,13 +23,13 @@ async def get_weather_data(data:device_data_model.WeatherDeviceData,client_id,de
         date_obj = datetime.strptime(data.DT, "%d%m%y")
         formatted_date = date_obj.strftime("%Y-%m-%d")
         
-        time_obj = datetime.strptime(data.TIME, "%H%M%S")
+        time_obj = datetime.strptime(data.TM, "%H%M%S")
         formatted_time = time_obj.strftime("%H:%M:%S")
         
          
         columns = "client_id, device_id, device,tw,temperature, rainfall, rainfall_cumulative, atm_pressure, solar_radiation, humidity, wind_speed, wind_direction, runhr, date, time, created_at"
 
-        value = f"{client_id}, {device_id}, '{device}',{data.TW}, {data.TEMERATURE}, {data.RAINFALL}, {data.RAINFALL_CUMULATIVE}, {data.ATM_PRESSURE}, {data.SOLAR_RADIATION}, {data.HUMIDITY}, {data.WIND_SPEED}, {data.WIND_DIRECTION}, {data.RUNHR}, '{formatted_date}', '{formatted_time}', '{current_datetime}'"
+        value = f"{client_id}, {device_id}, '{device}',{data.TW}, {data.C1}, {data.C4}, {data.RAIN_CUM}, {data.C3}, {data.C6}, {data.C2}, {data.C4}, {data.C5}, {data.RUNHR}, '{formatted_date}', '{formatted_time}', '{current_datetime}'"
         
         print("value",value)
         weather_data_id = insert_data("td_weather_data", columns, value)

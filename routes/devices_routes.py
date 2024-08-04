@@ -40,7 +40,7 @@ async def post_checked_devices(data: device_data_model.CheckedDevices):
 @devices_routes.post('/weather_data')
 async def post_weather_data(data: device_data_model.WeatherDeviceData):
     try:
-        controllerRes =  await WeatherController.get_weather_data(data,data.CLIENT_ID,data.UID)
+        controllerRes =  await WeatherController.get_weather_data(data,data.CL_ID,data.UID)
         resdata = successResponse(controllerRes, message="data stored successfully")
         return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
     except ValueError as ve:

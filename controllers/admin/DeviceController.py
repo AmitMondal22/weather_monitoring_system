@@ -126,8 +126,223 @@ async def weather_data(params,user_data):
         return data
     except Exception as e:
         raise e
+    
+@staticmethod
+async def monthly_report(params,user_data):
+    try:
+        condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id} AND ed.date BETWEEN '{params.start_date}' AND '{params.end_date}'"
+        select="""ed.weather_data_id,
+                    ed.device_id,
+                    ed.device,
+                    ed.tw,
+                    ed.temperature,
+                    ed.rainfall,
+                    ed.rainfall_cumulative,
+                    ed.atm_pressure,
+                    ed.solar_radiation,
+                    ed.humidity,
+                    ed.wind_speed,
+                    ed.wind_direction,
+                    DATE_FORMAT(ed.date, '%Y-%m-%d') AS date,
+                    TIME_FORMAT(ed.time, '%H:%i:%s') AS time,
+                    daily_stats.avg_temperature,
+                    daily_stats.avg_rainfall,
+                    daily_stats.avg_rainfall_cumulative,
+                    daily_stats.avg_atm_pressure,
+                    daily_stats.avg_solar_radiation,
+                    daily_stats.avg_humidity,
+                    daily_stats.min_temperature,
+                    daily_stats.min_rainfall,
+                    daily_stats.min_rainfall_cumulative,
+                    daily_stats.min_atm_pressure,
+                    daily_stats.min_solar_radiation,
+                    daily_stats.min_humidity,
+                    daily_stats.max_temperature,
+                    daily_stats.max_rainfall,
+                    daily_stats.max_rainfall_cumulative,
+                    daily_stats.max_atm_pressure,
+                    daily_stats.max_solar_radiation,
+                    daily_stats.max_humidity"""
+        table=f"""td_weather_data AS ed
+                        INNER JOIN (
+                            SELECT
+                                date,
+                                MAX(time) AS max_time
+                            FROM
+                                td_weather_data
+                            WHERE
+                                client_id = {user_data['client_id']} AND device_id = {params.device_id}
+                                AND date BETWEEN DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND CURDATE()
+                            GROUP BY
+                                date
+                        ) AS sub_ed ON ed.date = sub_ed.date AND ed.time = sub_ed.max_time
+                 INNER JOIN (
+                        SELECT
+                            date,
+                            AVG(temperature) AS avg_temperature,
+                            AVG(rainfall) AS avg_rainfall,
+                            AVG(rainfall_cumulative) AS avg_rainfall_cumulative,
+                            AVG(atm_pressure) AS avg_atm_pressure,
+                            AVG(solar_radiation) AS avg_solar_radiation,
+                            AVG(humidity) AS avg_humidity,
+                            MIN(temperature) AS min_temperature,
+                            MIN(rainfall) AS min_rainfall,
+                            MIN(rainfall_cumulative) AS min_rainfall_cumulative,
+                            MIN(atm_pressure) AS min_atm_pressure,
+                            MIN(solar_radiation) AS min_solar_radiation,
+                            MIN(humidity) AS min_humidity,
+                            MAX(temperature) AS max_temperature,
+                            MAX(rainfall) AS max_rainfall,
+                            MAX(rainfall_cumulative) AS max_rainfall_cumulative,
+                            MAX(atm_pressure) AS max_atm_pressure,
+                            MAX(solar_radiation) AS max_solar_radiation,
+                            MAX(humidity) AS max_humidity
+                        FROM
+                            td_weather_data
+                        WHERE
+                            client_id = {user_data['client_id']} AND device_id = {params.device_id}
+                            AND date BETWEEN DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND CURDATE()
+                        GROUP BY
+                            date
+                    ) AS daily_stats ON ed.date = daily_stats.date
+                        """
+        data = select_data(table,select, condition,order_by="date DESC, time DESC")
+        return data
+    except Exception as e:
+        raise e
 
+@staticmethod
+async def yearly_report(params,user_data):
+    try:
+        condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}  AND ed.date BETWEEN '{params.start_date}' AND '{params.end_date}'"
+        select="""ed.weather_data_id,
+                    ed.device_id,
+                    ed.device,
+                    ed.tw,
+                    ed.temperature,
+                    ed.rainfall,
+                    ed.rainfall_cumulative,
+                    ed.atm_pressure,
+                    ed.solar_radiation,
+                    ed.humidity,
+                    ed.wind_speed,
+                    ed.wind_direction,
+                    DATE_FORMAT(ed.date, '%Y-%m-%d') AS date,
+                    TIME_FORMAT(ed.time, '%H:%i:%s') AS time,
+                    -- Monthly averages
+                    monthly_stats.avg_temperature,
+                    monthly_stats.avg_rainfall,
+                    monthly_stats.avg_rainfall_cumulative,
+                    monthly_stats.avg_atm_pressure,
+                    monthly_stats.avg_solar_radiation,
+                    monthly_stats.avg_humidity,
+                    -- Monthly minimums
+                    monthly_stats.min_temperature,
+                    monthly_stats.min_rainfall,
+                    monthly_stats.min_rainfall_cumulative,
+                    monthly_stats.min_atm_pressure,
+                    monthly_stats.min_solar_radiation,
+                    monthly_stats.min_humidity,
+                    -- Monthly maximums
+                    monthly_stats.max_temperature,
+                    monthly_stats.max_rainfall,
+                    monthly_stats.max_rainfall_cumulative,
+                    monthly_stats.max_atm_pressure,
+                    monthly_stats.max_solar_radiation,
+                    monthly_stats.max_humidity"""
+        table =f"""td_weather_data AS ed 
+                        INNER JOIN (SELECT  
+                                        MAX(energy_data_id) AS max_energy_data_id,  
+                                        YEAR(date) AS year, 
+                                        MONTH(date) AS month 
+                                    FROM td_weather_data 
+                                    WHERE client_id = {user_data['client_id']} 
+                                    AND device_id = {params.device_id} 
+                                    GROUP BY  YEAR(date), MONTH(date) ) AS sub_ed 
+                        ON ed.energy_data_id = sub_ed.max_energy_data_id
+                        INNER JOIN (
+                            SELECT
+                                YEAR(date) AS year,
+                                MONTH(date) AS month,
+                                AVG(temperature) AS avg_temperature,
+                                AVG(rainfall) AS avg_rainfall,
+                                AVG(rainfall_cumulative) AS avg_rainfall_cumulative,
+                                AVG(atm_pressure) AS avg_atm_pressure,
+                                AVG(solar_radiation) AS avg_solar_radiation,
+                                AVG(humidity) AS avg_humidity,
+                                MIN(temperature) AS min_temperature,
+                                MIN(rainfall) AS min_rainfall,
+                                MIN(rainfall_cumulative) AS min_rainfall_cumulative,
+                                MIN(atm_pressure) AS min_atm_pressure,
+                                MIN(solar_radiation) AS min_solar_radiation,
+                                MIN(humidity) AS min_humidity,
+                                MAX(temperature) AS max_temperature,
+                                MAX(rainfall) AS max_rainfall,
+                                MAX(rainfall_cumulative) AS max_rainfall_cumulative,
+                                MAX(atm_pressure) AS max_atm_pressure,
+                                MAX(solar_radiation) AS max_solar_radiation,
+                                MAX(humidity) AS max_humidity
+                            FROM td_weather_data
+                            WHERE client_id = {user_data['client_id']} 
+                            AND device_id = {params.device_id}
+                            GROUP BY YEAR(date), MONTH(date)
+                        ) AS monthly_stats
+                        ON YEAR(ed.date) = monthly_stats.year AND MONTH(ed.date) = monthly_stats.month"""
+                        
+        data = select_data(table,select, condition,order_by="ed.date DESC, ed.time DESC")
+        return data
+    except Exception as e:
+        raise e
+    
+    
 
+@staticmethod
+async def daily_report(params,user_data):
+    try:
+        condition = f"""CONCAT(td.date, ' ', td.time) = (
+                        SELECT MAX(CONCAT(date, ' ', time))
+                        FROM td_weather_data
+                        WHERE client_id = {user_data['client_id']} 
+                        AND device_id = {params.device_id}
+                        AND date BETWEEN '{params.start_date}' AND '{params.end_date}'
+                        AND DATE(date) = DATE(td.date)
+                        AND HOUR(time) = HOUR(td.time)"""
+        table = f"""td_weather_data AS td
+                        JOIN (
+                            SELECT DATE(date) AS date, HOUR(time) AS hour,
+                                AVG(temperature) AS avg_temperature, MIN(temperature) AS min_temperature, MAX(temperature) AS max_temperature,
+                                AVG(rainfall) AS avg_rainfall, MIN(rainfall) AS min_rainfall, MAX(rainfall) AS max_rainfall,
+                                AVG(atm_pressure) AS avg_atm_pressure, MIN(atm_pressure) AS min_atm_pressure, MAX(atm_pressure) AS max_atm_pressure,
+                                AVG(solar_radiation) AS avg_solar_radiation, MIN(solar_radiation) AS min_solar_radiation, MAX(solar_radiation) AS max_solar_radiation,
+                                AVG(humidity) AS avg_humidity, MIN(humidity) AS min_humidity, MAX(humidity) AS max_humidity,
+                                AVG(wind_speed) AS avg_wind_speed, MIN(wind_speed) AS min_wind_speed, MAX(wind_speed) AS max_wind_speed,
+                                AVG(wind_direction) AS avg_wind_direction, MIN(wind_direction) AS min_wind_direction, MAX(wind_direction) AS max_wind_direction
+                            FROM td_weather_data
+                            WHERE client_id = {user_data['client_id']} 
+                            AND device_id = {params.device_id}
+                            AND date BETWEEN '{params.start_date}' AND '{params.end_date}'
+                            GROUP BY DATE(date), HOUR(time)
+                        ) AS stats
+                        ON DATE(td.date) = stats.date AND HOUR(td.time) = stats.hour"""
+        select=f"""td.weather_data_id, td.device_id, td.device, td.tw, td.temperature,
+                    td.rainfall, td.rainfall_cumulative, td.atm_pressure, td.solar_radiation, td.humidity, td.wind_speed, td.wind_direction,
+                    DATE_FORMAT(td.date, '%Y-%m-%d') AS date,
+                    TIME_FORMAT(td.time, '%H:%i:%s') AS time,
+                    stats.avg_temperature, stats.min_temperature, stats.max_temperature,
+                    stats.avg_rainfall, stats.min_rainfall, stats.max_rainfall,
+                    stats.avg_atm_pressure, stats.min_atm_pressure, stats.max_atm_pressure,
+                    stats.avg_solar_radiation, stats.min_solar_radiation, stats.max_solar_radiation,
+                    stats.avg_humidity, stats.min_humidity, stats.max_humidity,
+                    stats.avg_wind_speed, stats.min_wind_speed, stats.max_wind_speed,
+                    stats.avg_wind_direction, stats.min_wind_direction, stats.max_wind_direction"""
+        data = select_data(table,select, condition,order_by="date DESC, time DESC")
+                        
+        return data
+    except Exception as e:
+        raise e
+    
+    
+    
 @staticmethod
 async def temperature(params,user_data):
     try:

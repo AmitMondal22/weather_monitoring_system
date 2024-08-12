@@ -27,13 +27,20 @@ class WeatherDeviceData(BaseModel):
     TW: int
     
     C1: float #TEMP
+    T1: Optional[float] = 0.00
     PULSE1: float #RAIN
+    
     PULSE2: Optional[float] = 0.00
     C3: float #ATM_PRESS
+    T3: Optional[float] = 0.00
     C6: float #SOLAR_RAD
+    T6: Optional[float] = 0.00
     C2: float #HUMID
+    T2: Optional[float] = 0.00
     C4: float #WIND_SPD
+    T4: Optional[float] = 0.00
     C5: float #WIND_DIR
+    T5: Optional[float] = 0.00
     RUNHR : Optional[float] = 0.00
     
     
@@ -66,7 +73,55 @@ class WeatherDeviceData(BaseModel):
 #   "PULSE2": 3000.0,
 #   "DI1": true,  // Digital Input 1 state, true indicates 'ON'
 #   "DI2": false  // Digital Input 2 state, false indicates 'OFF'
+
+# t1 to t6 di1,di2 totalizer
 # }
+
+
+
+# {"TYPE":"N",
+# "UID":"ABCDE01001",
+# "DT":"04/08/24",
+# "TM":"15:06",
+# "TW":17,
+# "C1N":"CH1",
+# "C1U":"NA",
+# "C1":0,
+# "T1":0,
+# "T1U":"NA",
+# "C2N":"CH2",
+# "C2U":"NA",
+# "C2":0,
+# "T2":0,
+# "T2U":"NA",
+# "C3N":"CH3",
+# "C3U":"NA",
+# "C3":0,
+# "T3":0,
+# "T3U":"NA",
+# "C4N":"CH4",
+# "C4U":"NA",
+# "C4":0,
+# "T4":0,
+# "T4U":"NA",
+# "C5N":"CH5",
+# "C5U":"NA",
+# "C5":0,
+# "T5":0,
+# "T5U":"NA",
+# "C6N":"CH6",
+# "C6U":"NA",
+# "C6":0,
+# "T6":0,
+# "T6U":"NA",
+# "DI1N":"D0",
+# "DI1U":"Unit1",
+# "DI1":0,
+# "PULSE1":0,
+# "DI2N":"D1",
+# "DI2U":"Unit2",
+# "DI2":0,
+# "PULSE2":0}
     
     
     

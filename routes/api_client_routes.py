@@ -422,6 +422,47 @@ async def weather_data(request: Request,params:WeatherData):
         raise HTTPException(status_code=500, detail="Internal server error")
     
     
+
+
+@api_client_routes.route('/report/monthly_report', dependencies=[Depends(mw_client)])
+async def monthly_report(request: Request,params:WeatherData):
+    try:
+        userdata=request.state.user_data
+        data = await DeviceController.monthly_report(params,userdata)
+        resdata = successResponse(data, message="Monthly report")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+
+@api_client_routes.route('/report/yearly_report', dependencies=[Depends(mw_client)])
+async def yearly_report(request: Request,params:WeatherData):
+    try:
+        userdata=request.state.user_data
+        data = await DeviceController.yearly_report(params,userdata)
+        resdata = successResponse(data, message="Monthly report")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+@api_client_routes.route('/report/daily_report', dependencies=[Depends(mw_client)])
+async def daily_report(request: Request,params:WeatherData):
+    try:
+        userdata=request.state.user_data
+        data = await DeviceController.daily_report(params,userdata)
+        resdata = successResponse(data, message="Monthly report")
+        return Response(content=json.dumps(resdata,cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+    
+    
     
     # =================================================================================================
     
@@ -693,4 +734,8 @@ async def client_screen_settings_edit(request: Request,params:ClientScreenSettin
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
     
+    
+    
+    
+
     

@@ -252,14 +252,14 @@ async def yearly_report(params,user_data):
                     monthly_stats.max_humidity"""
         table =f"""td_weather_data AS ed 
                         INNER JOIN (SELECT  
-                                        MAX(energy_data_id) AS max_energy_data_id,  
+                                        MAX(weather_data_id) AS max_weather_data_id,  
                                         YEAR(date) AS year, 
                                         MONTH(date) AS month 
                                     FROM td_weather_data 
                                     WHERE client_id = {user_data['client_id']} 
                                     AND device_id = {params.device_id} 
                                     GROUP BY  YEAR(date), MONTH(date) ) AS sub_ed 
-                        ON ed.energy_data_id = sub_ed.max_energy_data_id
+                        ON ed.weather_data_id = sub_ed.max_weather_data_id
                         INNER JOIN (
                             SELECT
                                 YEAR(date) AS year,

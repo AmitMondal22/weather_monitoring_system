@@ -300,42 +300,86 @@ async def yearly_report(params,user_data):
 async def daily_report(params,user_data):
     try:
         condition = f"""CONCAT(td.date, ' ', td.time) = (
-                        SELECT MAX(CONCAT(date, ' ', time))
-                        FROM td_weather_data
-                        WHERE client_id = {user_data['client_id']} 
-                        AND device_id = {params.device_id}
-                        AND date BETWEEN '{params.start_date}' AND '{params.end_date}'
-                        AND DATE(date) = DATE(td.date)
-                        AND HOUR(time) = HOUR(td.time)"""
-        table = f"""td_weather_data AS td
-                        JOIN (
-                            SELECT DATE(date) AS date, HOUR(time) AS hour,
-                                AVG(temperature) AS avg_temperature, MIN(temperature) AS min_temperature, MAX(temperature) AS max_temperature,
-                                AVG(rainfall) AS avg_rainfall, MIN(rainfall) AS min_rainfall, MAX(rainfall) AS max_rainfall,
-                                AVG(atm_pressure) AS avg_atm_pressure, MIN(atm_pressure) AS min_atm_pressure, MAX(atm_pressure) AS max_atm_pressure,
-                                AVG(solar_radiation) AS avg_solar_radiation, MIN(solar_radiation) AS min_solar_radiation, MAX(solar_radiation) AS max_solar_radiation,
-                                AVG(humidity) AS avg_humidity, MIN(humidity) AS min_humidity, MAX(humidity) AS max_humidity,
-                                AVG(wind_speed) AS avg_wind_speed, MIN(wind_speed) AS min_wind_speed, MAX(wind_speed) AS max_wind_speed,
-                                AVG(wind_direction) AS avg_wind_direction, MIN(wind_direction) AS min_wind_direction, MAX(wind_direction) AS max_wind_direction
+                            SELECT MAX(CONCAT(date, ' ', time))
                             FROM td_weather_data
                             WHERE client_id = {user_data['client_id']} 
                             AND device_id = {params.device_id}
                             AND date BETWEEN '{params.start_date}' AND '{params.end_date}'
-                            GROUP BY DATE(date), HOUR(time)
+                            AND DATE(date) = DATE(td.date)
+                            AND HOUR(time) = HOUR(td.time) )"""
+                            
+        table = f"""td_weather_data AS td
+                        JOIN (
+                            SELECT 
+                                DATE(DATE) AS DATE,
+                                HOUR(TIME) AS hour,
+                                AVG(temperature) AS avg_temperature,
+                                MIN(temperature) AS min_temperature,
+                                MAX(temperature) AS max_temperature,
+                                AVG(rainfall) AS avg_rainfall,
+                                MIN(rainfall) AS min_rainfall,
+                                MAX(rainfall) AS max_rainfall,
+                                AVG(atm_pressure) AS avg_atm_pressure,
+                                MIN(atm_pressure) AS min_atm_pressure,
+                                MAX(atm_pressure) AS max_atm_pressure,
+                                AVG(solar_radiation) AS avg_solar_radiation,
+                                MIN(solar_radiation) AS min_solar_radiation,
+                                MAX(solar_radiation) AS max_solar_radiation,
+                                AVG(humidity) AS avg_humidity,
+                                MIN(humidity) AS min_humidity,
+                                MAX(humidity) AS max_humidity,
+                                AVG(wind_speed) AS avg_wind_speed,
+                                MIN(wind_speed) AS min_wind_speed,
+                                MAX(wind_speed) AS max_wind_speed,
+                                AVG(wind_direction) AS avg_wind_direction,
+                                MIN(wind_direction) AS min_wind_direction,
+                                MAX(wind_direction) AS max_wind_direction
+                            FROM
+                                td_weather_data
+                            WHERE
+                                client_id = {user_data['client_id']} AND device_id = {params.device_id} AND DATE BETWEEN '{params.start_date}' AND '{params.end_date}'
+                            GROUP BY
+                                DATE(DATE),
+                                HOUR(TIME)
                         ) AS stats
-                        ON DATE(td.date) = stats.date AND HOUR(td.time) = stats.hour"""
-        select=f"""td.weather_data_id, td.device_id, td.device, td.tw, td.temperature,
-                    td.rainfall, td.rainfall_cumulative, td.atm_pressure, td.solar_radiation, td.humidity, td.wind_speed, td.wind_direction,
-                    DATE_FORMAT(td.date, '%Y-%m-%d') AS date,
-                    TIME_FORMAT(td.time, '%H:%i:%s') AS time,
-                    stats.avg_temperature, stats.min_temperature, stats.max_temperature,
-                    stats.avg_rainfall, stats.min_rainfall, stats.max_rainfall,
-                    stats.avg_atm_pressure, stats.min_atm_pressure, stats.max_atm_pressure,
-                    stats.avg_solar_radiation, stats.min_solar_radiation, stats.max_solar_radiation,
-                    stats.avg_humidity, stats.min_humidity, stats.max_humidity,
-                    stats.avg_wind_speed, stats.min_wind_speed, stats.max_wind_speed,
-                    stats.avg_wind_direction, stats.min_wind_direction, stats.max_wind_direction"""
-        data = select_data(table,select, condition,order_by="date DESC, time DESC")
+                        ON DATE(td.date) = stats.DATE AND HOUR(td.time) = stats.hour"""
+                        
+        select=f"""td.weather_data_id,
+                    td.device_id,
+                    td.device,
+                    td.tw,
+                    td.temperature,
+                    td.rainfall,
+                    td.rainfall_cumulative,
+                    td.atm_pressure,
+                    td.solar_radiation,
+                    td.humidity,
+                    td.wind_speed,
+                    td.wind_direction,
+                    DATE_FORMAT(td.date, '%Y-%m-%d') AS DATE,
+                    TIME_FORMAT(td.time, '%H:%i:%s') AS TIME,
+                    stats.avg_temperature,
+                    stats.min_temperature,
+                    stats.max_temperature,
+                    stats.avg_rainfall,
+                    stats.min_rainfall,
+                    stats.max_rainfall,
+                    stats.avg_atm_pressure,
+                    stats.min_atm_pressure,
+                    stats.max_atm_pressure,
+                    stats.avg_solar_radiation,
+                    stats.min_solar_radiation,
+                    stats.max_solar_radiation,
+                    stats.avg_humidity,
+                    stats.min_humidity,
+                    stats.max_humidity,
+                    stats.avg_wind_speed,
+                    stats.min_wind_speed,
+                    stats.max_wind_speed,
+                    stats.avg_wind_direction,
+                    stats.min_wind_direction,
+                    stats.max_wind_direction"""
+        data = select_data(table,select, condition,order_by="DATE(td.date) DESC, TIME(td.time) DESC")
                         
         return data
     except Exception as e:

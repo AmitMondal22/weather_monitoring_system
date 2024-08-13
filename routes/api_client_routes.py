@@ -424,7 +424,7 @@ async def weather_data(request: Request,params:WeatherData):
     
 
 
-@api_client_routes.post('/report/monthly_report', dependencies=[Depends(mw_client)])
+@api_client_routes.post('/report/monthly_report', dependencies=[Depends(mw_user_client)])
 async def monthly_report(request: Request,params:WeatherData):
     try:
         userdata=request.state.user_data
@@ -437,7 +437,7 @@ async def monthly_report(request: Request,params:WeatherData):
         raise HTTPException(status_code=500, detail="Internal server error")
     
 
-@api_client_routes.post('/report/yearly_report', dependencies=[Depends(mw_client)])
+@api_client_routes.post('/report/yearly_report', dependencies=[Depends(mw_user_client)])
 async def yearly_report(request: Request,params:WeatherData):
     try:
         userdata=request.state.user_data
@@ -449,7 +449,7 @@ async def yearly_report(request: Request,params:WeatherData):
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
     
-@api_client_routes.post('/report/daily_report', dependencies=[Depends(mw_client)])
+@api_client_routes.post('/report/daily_report', dependencies=[Depends(mw_user_client)])
 async def daily_report(request: Request,params:WeatherData):
     try:
         userdata=request.state.user_data

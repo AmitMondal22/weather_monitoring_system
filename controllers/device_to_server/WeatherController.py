@@ -10,7 +10,7 @@ from datetime import datetime
 
 
 
-@staticmethod
+
 async def get_weather_data(data:device_data_model.WeatherDeviceData,client_id,device):
     try:
         device_data=select_one_data("md_device","device_id",f"client_id={client_id} AND device='{device}'")
@@ -46,7 +46,7 @@ async def get_weather_data(data:device_data_model.WeatherDeviceData,client_id,de
     
     
 
-@staticmethod  
+  
 async def send_last_weather_data(client_id, device_id, device):
     try:
         # Lazy import inside the function

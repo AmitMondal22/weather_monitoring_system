@@ -4,7 +4,7 @@ from utils.last12month import last_12_month
 from routes.mqtt_routes import subscribe_topics
 
 
-@staticmethod
+
 async def list_device(client_id):
     try:
         select="device_id, device"
@@ -16,7 +16,7 @@ async def list_device(client_id):
         raise e
     
     
-@staticmethod
+
 async def user_device_list(client_id, user_id, organization_id):
     try:
         select="d.device_id, d.device, d.do_channel, d.model, d.lat, d.lon, d.imei_no, d.last_maintenance, DATE_FORMAT(d.created_at, '%Y-%m-%d %H:%i:%s') AS created_at, DATE_FORMAT(d.updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at"
@@ -29,7 +29,7 @@ async def user_device_list(client_id, user_id, organization_id):
         raise ValueError("Could not fetch data")
 
 
-@staticmethod
+
 async def device_info(params,userdata):
     try:
         condition = f"client_id={userdata['client_id']} AND device_id = {params.device_id}"
@@ -46,7 +46,7 @@ async def device_info(params,userdata):
     except Exception as e:
         raise e
 
-@staticmethod
+
 async def add_device(params):
     try:
         
@@ -77,7 +77,7 @@ async def add_device(params):
     except Exception as e:
         raise e
     
-@staticmethod
+
 async def edit_device(params):
     try:
         condition = f"device_id = {params.device_id} AND client_id = {params.client_id}"
@@ -89,7 +89,7 @@ async def edit_device(params):
         raise e
     
 
-@staticmethod
+
 async def manage_list_device(params):
     try:
         condition = f"a.client_id = {params.client_id}"
@@ -116,7 +116,7 @@ async def manage_list_device(params):
 
     
 # =========================================================
-@staticmethod
+
 async def weather_data(params,user_data):
     try:
         select="wd.weather_data_id, wd.client_id, wd.device_id, wd.device, wd.tw, wd.temperature, wd.rainfall, wd.rainfall_cumulative, wd.atm_pressure, wd.solar_radiation, wd.humidity, wd.wind_speed, wd.wind_direction, wd.runhr, wd.date, wd.time, wd.created_at, wd.updated_at"
@@ -127,7 +127,7 @@ async def weather_data(params,user_data):
     except Exception as e:
         raise e
     
-@staticmethod
+
 async def monthly_report(params,user_data):
     try:
         condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id} AND ed.date BETWEEN '{params.start_date}' AND '{params.end_date}'"
@@ -211,7 +211,7 @@ async def monthly_report(params,user_data):
     except Exception as e:
         raise e
 
-@staticmethod
+
 async def yearly_report(params,user_data):
     try:
         condition = f"ed.client_id = {user_data['client_id']} AND ed.device_id = {params.device_id}  AND ed.date BETWEEN '{params.start_date}' AND '{params.end_date}'"
@@ -296,7 +296,7 @@ async def yearly_report(params,user_data):
     
     
 
-@staticmethod
+
 async def daily_report(params,user_data):
     try:
         condition = f"""CONCAT(td.date, ' ', td.time) = (
@@ -394,7 +394,7 @@ async def daily_report(params,user_data):
     
     
     
-@staticmethod
+
 async def temperature(params,user_data):
     try:
         select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time, ed.date, ed.time, ed.temperature"
@@ -404,7 +404,7 @@ async def temperature(params,user_data):
     except Exception as e:
         raise e
     
-@staticmethod
+
 async def rainfall_data(params,user_data):
     try:
         select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time, ed.date, ed.time, ed.rainfall, ed.rainfall_cumulative"
@@ -414,7 +414,7 @@ async def rainfall_data(params,user_data):
     except Exception as e:
         raise e
 
-@staticmethod
+
 async def atm_pressure_data(params,user_data):
     try:
         select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time, ed.date, ed.time, ed.atm_pressure"
@@ -425,7 +425,7 @@ async def atm_pressure_data(params,user_data):
         raise e
     
     
-@staticmethod
+
 async def solar_radiation_data(params,user_data):
     try:
         select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time, ed.date, ed.time, ed.solar_radiation"
@@ -435,7 +435,7 @@ async def solar_radiation_data(params,user_data):
     except Exception as e:
         raise e
     
-@staticmethod
+
 async def humidity_data(params,user_data):
     try:
         select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time, ed.date, ed.time, ed.humidity"
@@ -445,7 +445,7 @@ async def humidity_data(params,user_data):
     except Exception as e:
         raise e
     
-@staticmethod
+
 async def wind_speed_data(params,user_data):
     try:
         select="CONCAT(DATE_FORMAT(ed.date,'%Y-%m-%d'),'T',DATE_FORMAT(ed.time,'%H:%i:%s')) AS date_time, ed.date, ed.time, ed.wind_speed"
@@ -467,7 +467,7 @@ async def wind_direction_data(params,user_data):
     
 
 
-@staticmethod
+
 async def organization_settings(client_id,user_id,params):
     try:
         columndata="organization_id, client_id, countries_id, states_id, regions_id, subregions_id, cities_id, address, create_by, created_at"
@@ -480,7 +480,7 @@ async def organization_settings(client_id,user_id,params):
     except Exception as e:
         raise e
     
-@staticmethod
+
 async def organization_settings_list(client_id,user_id,params):
     try:
         condition = f"""st_org.cities_id = mlc.id
@@ -501,7 +501,7 @@ async def organization_settings_list(client_id,user_id,params):
     
 
     
-@staticmethod
+
 async def edit_organization_info(client_id,user_id,params):
     try:
         update_condition=f"client_id = {client_id} AND organization_id = {params.organization_id}"

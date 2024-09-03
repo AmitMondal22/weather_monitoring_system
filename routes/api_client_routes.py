@@ -86,7 +86,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str, device_id: st
 # ================================================================
 # ================================================================
 class SendEnergySocket:
-    @staticmethod
+    
     async def send_last_weather_data(client_id, device_id, device):
         try:
             # Lazy import inside the function

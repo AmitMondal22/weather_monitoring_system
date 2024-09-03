@@ -65,20 +65,20 @@ async def post_weather_data(data: device_data_model.WeatherDeviceDataApi):
             # TEMP=float(data.TEMP),
             
             C1= data.TEMP, #TEMP
-            T1= Optional[float] = 0.00,
+            T1=0.00,
             PULSE1=data.RAIN, #RAIN
             
-            PULSE2= Optional[float] = 0.00,
+            PULSE2= 0.00,
             C3=data.ATM_PRESS, #ATM_PRESS
-            T3= Optional[float] = 0.00,
+            T3=  0.00,
             C6=data.SOLAR_RAD, #SOLAR_RAD
-            T6= Optional[float] = 0.00,
+            T6=  0.00,
             C2= data.HUMID, #HUMID
-            T2= Optional[float] = 0.00,
+            T2=  0.00,
             C4= data.WIND_SPD, #WIND_SPD
-            T4= Optional[float] = 0.00,
+            T4=  0.00,
             C5= data.WIND_DIR, #WIND_DIR
-            T5= Optional[float] = 0.00,
+            T5=  0.00,
             RUNHR = data.RUNHR
         )
         

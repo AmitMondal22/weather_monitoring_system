@@ -3,6 +3,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from utils.response import errorResponse, successResponse
 from models import device_data_model
 from controllers.device_to_server import WeatherController,DeviceController
+from typing import Optional
 
 import json
 
@@ -41,6 +42,48 @@ async def post_checked_devices(data: device_data_model.CheckedDevices):
 async def post_weather_data(data: device_data_model.WeatherDeviceData):
     try:
         controllerRes =  await WeatherController.get_weather_data(data,data.CL_ID,data.UID)
+        resdata = successResponse(controllerRes, message="data stored successfully")
+        return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+@devices_routes.post('/weather_data_api')
+async def post_weather_data(data: device_data_model.WeatherDeviceDataApi):
+    try:
+        
+        
+        device_data = device_data_model.WeatherDeviceData(
+           
+            CL_ID  =data.CL_ID,
+            UID=data.UID,
+            DT=data.DT,
+            TM=data.TM,
+            TW=data.TW,
+            
+            # TEMP=float(data.TEMP),
+            
+            C1= data.TEMP, #TEMP
+            T1= Optional[float] = 0.00,
+            PULSE1=data.RAIN, #RAIN
+            
+            PULSE2= Optional[float] = 0.00,
+            C3=data.ATM_PRESS, #ATM_PRESS
+            T3= Optional[float] = 0.00,
+            C6=data.SOLAR_RAD, #SOLAR_RAD
+            T6= Optional[float] = 0.00,
+            C2= data.HUMID, #HUMID
+            T2= Optional[float] = 0.00,
+            C4= data.WIND_SPD, #WIND_SPD
+            T4= Optional[float] = 0.00,
+            C5= data.WIND_DIR, #WIND_DIR
+            T5= Optional[float] = 0.00,
+            RUNHR = data.RUNHR
+        )
+        
+        
+        controllerRes =  await WeatherController.get_weather_data(device_data,device_data.CL_ID,device_data.UID)
         resdata = successResponse(controllerRes, message="data stored successfully")
         return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
     except ValueError as ve:

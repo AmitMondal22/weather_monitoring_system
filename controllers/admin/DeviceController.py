@@ -384,7 +384,8 @@ async def daily_report(params,user_data):
                     stats.max_wind_speed,
                     stats.avg_wind_direction,
                     stats.min_wind_direction,
-                    stats.max_wind_direction"""
+                    stats.max_wind_direction
+                    stats.max_rainfall as rain_intensity"""
         data = select_data(table,select, condition,order_by="DATE(td.date) DESC, TIME(td.time) DESC")
                         
         return data

@@ -43,7 +43,21 @@ class WeatherDeviceData(BaseModel):
     T5: Optional[float] = 0.00
     RUNHR : Optional[float] = 0.00
     
-    
+class WeatherDeviceDataApi(BaseModel)
+    CL_ID:  int
+    UID: str # device id
+    DT: str
+    TM: str
+    TW: int
+    TEMP: Optional[float] = 0.00
+    RAIN: Optional[float] = 0.00
+    RAIN_CUM: Optional[float] = 0.00
+    ATM_PRESS: Optional[float] = 0.00
+    SOLAR_RAD: Optional[float] = 0.00
+    HUMID: Optional[float] = 0.00
+    WIND_SPD: Optional[float] = 0.00
+    WIND_DIR: Optional[float] = 0.00
+    RUNHR : Optional[float] = 0.00
     
 #     {
 #   "TYPE": "N", // Assuming logType = 0

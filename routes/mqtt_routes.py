@@ -30,7 +30,6 @@ async def startup_event():
 
 # =========================================================
 # MQTT TOPIC
-@staticmethod
 async def subscribe_topics():
     try:
         data = await update_topics()

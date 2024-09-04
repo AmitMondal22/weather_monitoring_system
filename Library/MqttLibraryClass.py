@@ -39,6 +39,7 @@ class MqttLibraryClass:
         for topic, qos in topics:
             self.subscriptions.append((topic, qos))
             if self.client.is_connected():
+                print("jdsbcjh")
                 self.client.subscribe(topic, qos=qos)
 
     def publish(self, topic, message, qos=0):

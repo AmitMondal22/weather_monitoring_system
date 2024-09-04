@@ -34,10 +34,10 @@ async def startup_event():
 async def subscribe_topics():
     try:
         data = await update_topics()
-        print("data",data)
+        print("Subscribing to topics:", data)
         mqtt_client.subscribe(data)
     except Exception as e:
-        print(e)
+        print("Error in subscribing topics:", e)
         
 # =========================================================
 # @mqtt_routes.post("/publish/")

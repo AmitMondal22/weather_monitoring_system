@@ -15,11 +15,14 @@ class MqttLibraryClass:
         self.subscriptions = []
 
     def on_connect(self, client, userdata, flags, rc):
+        print(f"Connected with result code {rc}")
         for topic, qos in self.subscriptions:
+            print(f"Subscribing to {topic} with QoS {qos}")
             client.subscribe(topic, qos=qos)
 
     def on_message(self, client, userdata, msg):
         try:
+            print(f"Message received on topic {msg.topic}")
             topic_name=msg.topic
             parts = topic_name.split('/')
             # reqdata=DotDictLibrary(json.loads(msg.payload))

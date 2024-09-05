@@ -51,3 +51,4 @@ class MqttLibraryClass:
     def disconnect(self):
         self.client.loop_stop()
         self.client.disconnect()
+        print("Disconnected from MQTT broker")

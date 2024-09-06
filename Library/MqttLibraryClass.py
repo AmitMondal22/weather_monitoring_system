@@ -34,9 +34,13 @@ class MqttLibraryClass:
 
     def subscribe(self, topics):
         for topic, qos in topics:
-            self.subscriptions.append((topic, qos))
-            if self.client.is_connected():
-                self.client.subscribe(topic, qos=qos)
+            # Check if the topic is already subscribed
+            if (topic, qos) not in self.subscriptions:
+                self.subscriptions.append((topic, qos))
+                if self.client.is_connected():
+                    print("Subscribed to topic: ", topic)
+                    self.client.subscribe(topic, qos=qos)
+                    
 
     def publish(self, topic, message, qos=0):
         self.client.publish(topic, message, qos=qos)

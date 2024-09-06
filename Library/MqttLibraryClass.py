@@ -5,7 +5,8 @@ import json
 import asyncio
 
 class MqttLibraryClass:
-    def __init__(self, broker_address, broker_port):
+    def __init__(self, broker_address, broker_port, client_id):
+        # Initialize MQTT client without client_id
         self.client = mqtt.Client()
         self.broker_address = broker_address
         self.broker_port = broker_port
@@ -20,17 +21,13 @@ class MqttLibraryClass:
 
     def on_message(self, client, userdata, msg):
         try:
-            topic_name=msg.topic
+            topic_name = msg.topic
             parts = topic_name.split('/')
-            # reqdata=DotDictLibrary(json.loads(msg.payload))
-            # if parts[0] == "ums":
-            reqdata=DotDictLibrary(json.loads(msg.payload.decode('utf-8')))
-            
-            asyncio.run(WeatherController.get_weather_data(reqdata,parts[1],parts[2]))
+            reqdata = DotDictLibrary(json.loads(msg.payload.decode('utf-8')))
+            asyncio.run(WeatherController.get_weather_data(reqdata, parts[1], parts[2]))
         except Exception as e:
-            print("Error in on_message",e)
+            print("Error in on_message", e)
     
-
     def connect(self):
         self.client.connect(self.broker_address, self.broker_port, 60)
         self.client.loop_start()
@@ -47,3 +44,5 @@ class MqttLibraryClass:
     def disconnect(self):
         self.client.loop_stop()
         self.client.disconnect()
+ 
+mqtt_client = MqttLibraryClass("techavoiot.co.in", 1883, "fastapi-mqtt-client")

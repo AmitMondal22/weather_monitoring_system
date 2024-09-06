@@ -7,7 +7,7 @@ class WsConnectionManagerManyDeviceTypes:
     def __init__(self):
         self.connection_file = "ws_active_connections_by_data.json"
         self.load_connections()
-        print("active_connections",self.active_connections)
+        print("active_connections2",self.active_connections)
 
     def load_connections(self):
         try:
@@ -16,7 +16,7 @@ class WsConnectionManagerManyDeviceTypes:
                 if data:
                     self.active_connections = json.loads(data)
                     
-                    print("active_connections",self.active_connections)
+                    # print("active_connections",self.active_connections)
                 else:
                     self.active_connections = {}
         except (FileNotFoundError, json.JSONDecodeError) as e:

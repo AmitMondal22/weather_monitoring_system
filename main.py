@@ -6,6 +6,7 @@ from datetime import date, datetime, timedelta
 from routes import api_client_routes, devices_routes, user_routes,auth_routes,mqtt_routes,ws_routes,api_user_routes,api_common_routes
 from decimal import Decimal
 import uvicorn
+import asyncio
 
 
 
@@ -14,7 +15,7 @@ app = FastAPI()
 
 # Set up CORS
 origins = [
-    "http://192.168.29.210:8010",
+    "http://127.0.0.1:8010",
     "http://localhost:8010",
     "*"
 ]
@@ -76,10 +77,26 @@ app.include_router(mqtt_routes.mqtt_routes, prefix="/api/mqtt", tags=["mqtt"])
 app.include_router(ws_routes.ws_routes, prefix="/api/ws_routes", tags=["WS"])
 app.include_router(api_common_routes.api_common_routes, prefix="/api/common", tags=["common"])
 
+
+
+# Background task to print the time every 10 seconds
+async def print_time():
+    while True:
+        print(f"Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        await asyncio.sleep(10)
+
 # Index route
 @app.get('/')
 def index():
     return "hello world"  # Corrected typo
+
+
+# Lifespan event to start the background task when the app starts
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(print_time())  # Start the print_time task
+
+
 
 
 if __name__ == "__main__":

@@ -6,7 +6,6 @@ from datetime import date, datetime, timedelta
 from routes import api_client_routes, devices_routes, user_routes,auth_routes,mqtt_routes,ws_routes,api_user_routes,api_common_routes
 from decimal import Decimal
 import uvicorn
-import asyncio
 
 
 
@@ -79,11 +78,7 @@ app.include_router(api_common_routes.api_common_routes, prefix="/api/common", ta
 
 
 
-# Background task to print the time every 10 seconds
-async def print_time():
-    while True:
-        print(f"Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        await asyncio.sleep(10)
+
 
 # Index route
 @app.get('/')
@@ -91,10 +86,6 @@ def index():
     return "hello world"  # Corrected typo
 
 
-# Lifespan event to start the background task when the app starts
-@app.on_event("startup")
-async def startup_event():
-    asyncio.create_task(print_time())  # Start the print_time task
 
 
 

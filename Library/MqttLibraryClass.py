@@ -49,4 +49,5 @@ class MqttLibraryClass:
         self.client.loop_stop()
         self.client.disconnect()
  
-mqtt_client = MqttLibraryClass("techavoiot.co.in", 1883, "fastapi-mqtt-client")
+mqtt_client = MqttLibraryClass("localhost", 1883, "fastapi-mqtt-client")
+# mqtt_client = MqttLibraryClass("tzechavoiot.co.in", 1883, "fastapi-mqtt-client")

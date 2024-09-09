@@ -31,7 +31,7 @@ async def startup_event():
 
 async def subscribe_topics():
     try:
-        # mqtt_client = MqttLibraryClass("techavoiot.co.in", 1883)
+        # mqtt_client = MqttLibraryClass("localhost", 1883)
         # Connect to the MQTT broker
         mqtt_client.connect()
         data = await update_topics()
@@ -43,7 +43,7 @@ async def subscribe_topics():
 # Event to stop the MQTT client on FastAPI shutdown
 @mqtt_routes.on_event("shutdown")
 async def shutdown_event():
-    # mqtt_client = MqttLibraryClass("techavoiot.co.in", 1883)
+    # mqtt_client = MqttLibraryClass("localhost", 1883)
         # Connect to the MQTT broker
     # mqtt_client.connect()
     mqtt_client.disconnect()

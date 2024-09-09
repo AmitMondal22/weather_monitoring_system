@@ -378,3 +378,9 @@ class EditOrganization(BaseModel):
     subregions_id: int
     cities_id: int
     address: str
+
+
+class UserData(BaseModel):
+    name: str
+    # email: EmailStr
+    age: Optional[int] = None

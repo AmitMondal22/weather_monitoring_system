@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Response, UploadFile,Depends,Request
+from fastapi import APIRouter, HTTPException, Response, UploadFile,Depends,Request,Form,File
 from models import auth_model
 from utils.response import errorResponse, successResponse
 from pathlib import Path
@@ -14,6 +14,7 @@ import json
 import shutil
 import hashlib
 from middleware.MyMiddleware import mw_client,mw_user,mw_user_client
+from controllers.super_admin import UserInfoClass
 
 user_routes = APIRouter()
 
@@ -34,32 +35,54 @@ def sanitize_filename(filename: str) -> str:
 
 
 
-@user_routes.post("/client_logo_upload/",dependencies=[Depends(mw_user_client)])
-async def upload_file(request: Request,file: UploadFile):
-
+@user_routes.post("/client_logo_upload/",dependencies=[Depends(mw_client)])
+async def upload_file(
+    request: Request,
+    client_name: str = Form(...),
+    client_address: str = Form(...),
+    client_mobile: str = Form(...),
+    client_email: str = Form(...),
+    file: UploadFile=File(None)
+    ):
     user_data=request.state.user_data
-    UPLOAD_DIR = Path("upload/client_image")
-    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-    if not allowed_file(file.filename):
-        raise HTTPException(status_code=400, detail="Invalid file type")
-
-    # Check file size
-    contents = await file.read()
-    if len(contents) > MAX_SIZE_MB * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="File size exceeds 2 MB")
+    if file is None:
+        
+        await UserInfoClass.upload_update_client_logo(user_data,client_name,client_address,client_mobile,client_email,None)
     
-    file.seek(0)  # Reset file pointer to the beginning
+    else:
+        
+        UPLOAD_DIR = Path("upload/client_image")
+        UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+        if not allowed_file(file.filename):
+            raise HTTPException(status_code=400, detail="Invalid file type")
 
-    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-    sanitized_filename = sanitize_filename(file.filename)
-    file_location = UPLOAD_DIR / sanitized_filename
+        # Check file size
+        contents = await file.read()
+        if len(contents) > MAX_SIZE_MB * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="File size exceeds 2 MB")
+        
+        file.seek(0)  # Reset file pointer to the beginning
 
-    try:
-        with file_location.open("wb") as buffer:
-            buffer.write(contents)
-        return {"filename": sanitized_filename, "location": str(file_location)}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
+        UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+        sanitized_filename = sanitize_filename(file.filename)
+        file_location = UPLOAD_DIR / sanitized_filename
+        
+        if user_data['logo'] is not None:
+            try:
+                file_path = UPLOAD_DIR / user_data['logo']
+                if file_path.is_file():
+                    file_path.unlink()
+            except Exception as e:
+                pass
+
+        try:
+            with file_location.open("wb") as buffer:
+                buffer.write(contents)
+            
+            await UserInfoClass.upload_update_client_logo(user_data,client_name,client_address,client_mobile,client_email,sanitized_filename)
+            return {"filename": sanitized_filename, "location": str(file_location)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
 
 
 

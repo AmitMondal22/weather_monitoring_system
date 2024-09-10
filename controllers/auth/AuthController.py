@@ -119,14 +119,14 @@ async def login(user) -> dict:
 
         if user_info['user_type'] == 'C':
             select_fields += [
-                "c.client_id", "c.client_name", "c.client_address", 
+                "c.client_id", "c.client_name", "c.client_address", "c.logo",
                 "c.client_mobile", "c.client_email"
             ]
             additional_joins = "JOIN md_client AS c ON u.user_info_id = c.client_id"
             condition += " AND u.user_active_status = 'Y' AND u.user_type = 'C'"
         elif user_info['user_type'] == 'U':
             select_fields += [
-                "c.client_id", "c.client_name", "c.client_address", 
+                "c.client_id", "c.client_name", "c.client_address","c.logo", 
                 "c.client_mobile", "c.client_email", "org.organization_name", 
                 "org.organization_id", "svo.gv_energy_used", "svo.gv_voltage", 
                 "svo.gv_current", "svo.gv_power", "svo.mn_add_organization", 

@@ -88,6 +88,7 @@ async def send_last_weather_data(client_id, device_id, device):
         
         # await manager.send_personal_message("EMS",client_id, device_id, device, json.dumps(lastdata, cls=DecimalEncoder))
         twodata={"lastdata":lastdata,"last10row":lastdata10}
+        print("twodata",twodata)
         await sennd_ws_message("WMS",client_id, device_id, device, json.dumps(twodata, cls=DecimalEncoder))
        
         return json.dumps(lastdata, cls=DecimalEncoder)

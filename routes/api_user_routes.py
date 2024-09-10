@@ -15,6 +15,7 @@ import shutil
 import hashlib
 from middleware.MyMiddleware import mw_client,mw_user,mw_user_client
 from controllers.super_admin import UserInfoClass
+from models.auth_model import ChangePassword
 
 user_routes = APIRouter()
 
@@ -107,3 +108,18 @@ async def view_image(filename: str):
     if not file_path.is_file():
         raise HTTPException(status_code=404, detail="File not found.")
     return FileResponse(file_path)
+
+
+@user_routes.post("/change_password/",dependencies=[Depends(mw_user_client)])
+async def change_password( request: Request,params:ChangePassword):
+    try:
+        user_data=request.state.user_data
+        data = await UserInfoClass.change_password(user_data,params)
+        resdata = successResponse(data, message="Password changed successfully")
+        return Response(content=json.dumps(resdata, cls=DecimalEncoder), media_type="application/json", status_code=200)
+    except ValueError as ve:
+        # If there's a ValueError, return a 400 Bad Request with the error message
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        # For any other unexpected error, return a 500 Internal Server Error
+        raise HTTPException(status_code=500, detail="Internal server error")

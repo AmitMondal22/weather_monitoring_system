@@ -25,7 +25,6 @@ class Register(BaseModel):
 
 
 
-
 class Login(BaseModel):
     email: EmailStr
     password: str
@@ -35,4 +34,16 @@ class Login(BaseModel):
         forbidden_characters = ["'", "\"", ";", "--"]
         if any(char in v for char in forbidden_characters):
             raise ValueError("Invalid input")
+        return v
+    
+class ChangePassword(BaseModel):
+    old_password: str
+    password: str
+    confirm_password: str
+
+
+    @validator('confirm_password')
+    def passwords_match(cls, v, values, **kwargs):
+        if 'password' in values and v != values['password']:
+            raise ValueError('Passwords do not match')
         return v

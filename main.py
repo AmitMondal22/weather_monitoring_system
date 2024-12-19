@@ -3,8 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from json import JSONEncoder
 from datetime import date, datetime, timedelta
-from routes import api_client_routes, devices_routes, user_routes,auth_routes,mqtt_routes,ws_routes,api_user_routes,api_common_routes,webhooks_routes
-
+from routes import api_client_routes, devices_routes, user_routes,auth_routes,mqtt_routes,ws_routes,api_user_routes,api_common_routes
 from decimal import Decimal
 import uvicorn
 
@@ -76,7 +75,6 @@ app.include_router(mqtt_routes.mqtt_routes, prefix="/api/mqtt", tags=["mqtt"])
 
 app.include_router(ws_routes.ws_routes, prefix="/api/ws_routes", tags=["WS"])
 app.include_router(api_common_routes.api_common_routes, prefix="/api/common", tags=["common"])
-app.include_router(webhooks_routes.webhooks_routes, prefix="/api/webhooks", tags=["webhooks"])
 
 
 

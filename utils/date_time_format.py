@@ -95,11 +95,3 @@ def get_current_timedelta()->str:
     return current_timedelta
 
 
-def get_current_datetime_string():
-    # Get the current date and time
-    now = datetime.now()
-    
-    # Format the datetime as "DD,MM,YYYY,HR,MM,SS"
-    formatted_datetime = now.strftime("%d,%m,%Y,%H,%M,%S")
-    
-    return formatted_datetime

@@ -44,6 +44,7 @@ class WeatherDeviceData(BaseModel):
     RUNHR : Optional[float] = 0.00
     
 class WeatherDeviceDataApi(BaseModel):
+    api_key:  Optional[str]=""
     CL_ID:  int
     UID: str # device id
     DT: str

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Response, Depends
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from utils.response import errorResponse, successResponse
+from utils.EncriptFunction import generate_api_key, decrypt_api_key
 from models import device_data_model
 from controllers.device_to_server import WeatherController,DeviceController
 from typing import Optional
@@ -51,7 +52,7 @@ async def post_weather_data(data: device_data_model.WeatherDeviceData):
     
 @devices_routes.post('/weather_data_api')
 async def post_weather_data(data: device_data_model.WeatherDeviceDataApi):
-    try:
+    # try:
         
         
         device_data = device_data_model.WeatherDeviceData(
@@ -83,13 +84,22 @@ async def post_weather_data(data: device_data_model.WeatherDeviceDataApi):
         )
         
         
+        print("data.CL_ID",data.CL_ID)
+        encdata = generate_api_key(str(data.CL_ID))
+        print("Encrypted",encdata)
+        decode = decrypt_api_key(str(data.api_key))
+        print("Decrypted",decode)
+        
+
+        
+        
         controllerRes =  await WeatherController.get_weather_data(device_data,device_data.CL_ID,device_data.UID)
         resdata = successResponse(controllerRes, message="data stored successfully")
         return Response(content=json.dumps(resdata), media_type="application/json", status_code=200)
-    except ValueError as ve:
-        raise HTTPException(status_code=400, detail=str(ve))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal server error")
+    # except ValueError as ve:
+    #     raise HTTPException(status_code=400, detail=str(ve))
+    # except Exception as e:
+    #     raise HTTPException(status_code=500, detail="Internal server error")
     
 # ==============================================================================
 # # modifications

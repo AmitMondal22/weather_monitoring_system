@@ -38,25 +38,28 @@ def generate_api_key(client_id):
 
 # Function to decrypt the API key back to the client_id
 def decrypt_api_key(api_key):
-    # Decode the base64 encoded API key
-    encrypted_data = base64.b64decode(api_key)
-    
-    # Extract the IV and the encrypted data
-    iv = encrypted_data[:16]
-    encrypted_client_id = encrypted_data[16:]
-    
-    # Create the cipher object
-    cipher = Cipher(algorithms.AES(SECRET_KEY2), modes.CBC(iv), backend=default_backend())
-    decryptor = cipher.decryptor()
-    
-    # Decrypt the data
-    decrypted_data = decryptor.update(encrypted_client_id) + decryptor.finalize()
-    
-    # Unpad the decrypted data and return the client_id
-    unpadder = padding.PKCS7(128).unpadder()
-    unpadded_data = unpadder.update(decrypted_data) + unpadder.finalize()
-    
-    return int(unpadded_data.decode('utf-8'))
+    try:
+        # Decode the base64 encoded API key
+        encrypted_data = base64.b64decode(api_key)
+        
+        # Extract the IV and the encrypted data
+        iv = encrypted_data[:16]
+        encrypted_client_id = encrypted_data[16:]
+        
+        # Create the cipher object
+        cipher = Cipher(algorithms.AES(SECRET_KEY2), modes.CBC(iv), backend=default_backend())
+        decryptor = cipher.decryptor()
+        
+        # Decrypt the data
+        decrypted_data = decryptor.update(encrypted_client_id) + decryptor.finalize()
+        
+        # Unpad the decrypted data and return the client_id
+        unpadder = padding.PKCS7(128).unpadder()
+        unpadded_data = unpadder.update(decrypted_data) + unpadder.finalize()
+        
+        return int(unpadded_data.decode('utf-8'))
+    except Exception as e:
+        raise ValueError("Unable to decrypt")
 
 # Example usage
 client_id = 125

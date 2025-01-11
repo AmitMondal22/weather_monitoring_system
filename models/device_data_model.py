@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, constr, validator
+from pydantic import BaseModel, Field, constr, validator, constr
 from datetime import date,datetime,time
 import re
 from typing import Optional,List
@@ -43,6 +43,39 @@ class WeatherDeviceData(BaseModel):
     T5: Optional[float] = 0.00
     RUNHR : Optional[float] = 0.00
     
+class WeatherDeviceDataApi(BaseModel):
+    api_key:  Optional[str]=""
+    CL_ID:  int
+    UID: str # device id
+    DT: str
+    TM: str
+    TW: int
+    TEMP: Optional[float] = 0.00
+    RAIN: Optional[float] = 0.00
+    RAIN_CUM: Optional[float] = 0.00
+    ATM_PRESS: Optional[float] = 0.00
+    SOLAR_RAD: Optional[float] = 0.00
+    HUMID: Optional[float] = 0.00
+    WIND_SPD: Optional[float] = 0.00
+    WIND_DIR: Optional[float] = 0.00
+    RUNHR : Optional[float] = 0.00
+    
+class WeatherDeviceDataApiChnnel(BaseModel):
+    api_key:  str
+    CL_ID:  int
+    UID: constr(min_length=10, max_length=10)
+    TW: int
+    C1: Optional[float] = 0.00 #TEMP
+    C2: Optional[float] = 0.00 #RAIN
+    C3: Optional[float] = 0.00 #RAIN_CUM
+    C4: Optional[float] = 0.00 #ATM_PRESS
+    C5: Optional[float] = 0.00 #SOLAR_RAD
+    C6: Optional[float] = 0.00 #HUMID
+    C7: Optional[float] = 0.00 #WIND_SPD
+    C8: Optional[float] = 0.00 #WIND_DIR
+    RUNHR : Optional[float] = 0.00
+    
+
 class WeatherDeviceDataApi(BaseModel):
     api_key:  Optional[str]=""
     CL_ID:  int
